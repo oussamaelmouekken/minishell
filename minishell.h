@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/16 15:42:38 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 21:20:43 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,14 +66,14 @@ typedef struct command
 // execution part
 // void				exe(char *line, char **av, t_envp **env);
 void				pwd(void);
-void				cd(char **cmd, t_envp *env);
+void				cd(t_command *cmd, t_envp *env);
 t_envp				*add_env(char **env);
-void				afficher_env(char **cmd, t_envp *env);
-void				echo_n(char **cmd);
+void				afficher_env(t_command *cmd, t_envp *env);
+void				echo_n(t_command *cmd);
 char				*ft_getenv(char *variable, t_envp *env);
-void				unset(char **cmd, t_envp **env);
+void				unset(t_command *cmd, t_envp **env);
 void				ft_add_value_env(char *node, t_envp **env);
-void				export(char **cmd, t_envp **env);
+void				export(t_command *cmd, t_envp **env);
 char				*to_fin(char *str);
 char				*to_egal(char *str);
 int					check_if_egal_exit(char *str);

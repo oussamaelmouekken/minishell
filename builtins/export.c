@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/11 22:10:53 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/16 09:54:07 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 21:22:33 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,7 +321,7 @@ void	check_cmd(char *str, t_envp*env)
 	ft_add_value_env(str, &env);
 }
 
-void	export(char **cmd, t_envp **env)
+void	export(t_command*cmd, t_envp **env)
 {
 	if (cmd == NULL || *env == NULL)
 	{
@@ -329,9 +329,9 @@ void	export(char **cmd, t_envp **env)
 		return ;
 	}
 	int i = 1;
-	while (cmd[i])
+	while (cmd->command_chain[i])
 	{
-		check_cmd(cmd[i], *env);
+		check_cmd(cmd->command_chain[i], *env);
 		i++;
 	}
 	//////// ba9i erro ila kan bzaf dyal largument

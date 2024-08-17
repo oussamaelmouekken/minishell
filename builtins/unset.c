@@ -6,18 +6,18 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 14:17:41 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/16 09:54:29 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 21:19:36 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	unset(char **cmd, t_envp **env)
+void	unset(t_command *cmd, t_envp **env)
 {
 	int i = 1;
-	while (cmd[i])
+	while (cmd->command_chain[i])
 	{
-		char *target = ft_strjoin(cmd[i], "=");
+		char *target = ft_strjoin(cmd->command_chain[i], "=");
 		if (!target)
 		{
 			printf("error\n");

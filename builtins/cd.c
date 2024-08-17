@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 14:49:09 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/16 09:48:37 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 21:17:18 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,13 @@ char *ft_getenv(char *variable, t_envp *env)
 	}
 	return (NULL);
 }
-void	cd(char **cmd, t_envp *env)
+void	cd(t_command *cmd ,t_envp *env)
 {
 	char	oldpwd[4096];
 	char	newpwd[4096];
 	char	*path;
 
-	if (cmd[1] == NULL)
+	if (cmd->command_chain[1] == NULL)
 	{
 		path = ft_getenv("HOME", env);
 		if (path == NULL)
@@ -79,7 +79,7 @@ void	cd(char **cmd, t_envp *env)
 		}
 	}
 	else
-		path = cmd[1];
+		path = cmd->command_chain[1];
 	if (getcwd(oldpwd, 4096) == NULL)
 	{
 		perror("error getcwd()");

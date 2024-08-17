@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/16 09:52:20 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 22:00:08 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	ft_add_value_env(char *node, t_envp **env)
 	new_node->key = to_egal(node);
 	if ((ft_strcmp(new_node->key, "PATH=") == 0) && f == 1)
 		new_node->env_path = true;
-	new_node->key = to_fin(node);
+	new_node->value = to_fin(node);
 	new_node->next = NULL;
 	if (tmp)
 		tmp->next = new_node;
@@ -147,28 +147,28 @@ t_envp	*add_env(char **env)
 	}
 	return (envp);
 }
-void	afficher_env(char **cmd, t_envp *env)
+void	afficher_env(t_command*cmd, t_envp *env)
 {
 	t_envp	*tmp;
 	int		i;
 
 	tmp = env;
 	i = 0;
-	if (ft_strcmp(cmd[0], "env") == 0)
+	if (ft_strcmp(cmd->command_chain[0], "env") == 0)
 	{
-		while (cmd[i])
+		while (cmd->command_chain[i])
 		{
-			if (ft_cmp(cmd[i], "env") != 0)
+			if (ft_cmp(cmd->command_chain[i], "env") != 0)
 			{
-				printf("env: %s: No such file or directory\n", cmd[i]);
+				printf("env: %s: No such file or directory\n", cmd->command_chain[i]);
 				return ;
 			}
 			i++;
 		}
 	}
-	if (ft_strcmp(cmd[0], "export") == 0)
+	if (ft_strcmp(cmd->command_chain[0], "export") == 0)
 	{
-		if (cmd[1] != NULL)
+		if (cmd->command_chain[1] != NULL)
 		{
 			export(cmd, &env);
 			return ;
@@ -178,7 +178,7 @@ void	afficher_env(char **cmd, t_envp *env)
 	{
 		if (tmp->env_path == false)
 		{
-			if (ft_strcmp(cmd[0], "export") == 0 && cmd[1] == NULL)
+			if (ft_strcmp(cmd->command_chain[0], "export") == 0 && cmd->command_chain[1] == NULL)
 			{
 				sort_list(&env);
 				check_egal(&env);

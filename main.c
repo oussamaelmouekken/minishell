@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/16 15:55:07 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/17 13:43:35 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void	show_command(t_command *command)
 		printf("command-%i: ", j + 1);
 		while (current->command_chain[i] != NULL)
 		{
-			printf("%s ", current->command_chain[i]);
+			printf("arg[%i] = %s, ",  i, current->command_chain[i]);
 			i++;
 		}
 		printf("\n");
@@ -198,12 +198,12 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 			continue ;
 		}
 		lexer_phase(lexer, input, list_envp);
-		if (syntax_error(*lexer))
-		{
-			free_list(lexer);
-			free(input);
-			continue ;
-		}
+		// if (syntax_error(*lexer))
+		// {
+		// 	free_list(lexer);
+		// 	free(input);
+		// 	continue ;
+		// }
 		// for debugging
 		// show_lexer(*lexer);
 		command = parser_phase(*lexer);
