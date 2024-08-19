@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 11:01:36 by oel-moue          #+#    #+#             */
-/*   Updated: 2023/11/01 12:52:13 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/18 16:18:23 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
 
-char	*ft_strchr(const char *str, int c)
+char	*ft_strchr(char *str, int c)
 {
 	int		i;
 	char	*s;

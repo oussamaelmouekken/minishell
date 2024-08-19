@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/17 21:20:43 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/19 22:29:11 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ typedef struct command
 }					t_command;
 // execution part
 // void				exe(char *line, char **av, t_envp **env);
+void				print_minishell(void);
+char				**add_env_arr(t_envp *env);
 void				pwd(void);
 void				cd(t_command *cmd, t_envp *env);
 t_envp				*add_env(char **env);
@@ -80,7 +82,8 @@ int					check_if_egal_exit(char *str);
 int					ft_cmp(char *s1, char *s2);
 void				sort_list(t_envp **env);
 void				check_egal(t_envp **env);
-void				execute_command(t_command *cmd, t_envp **env);
+void				execute_command(t_command *cmd, t_envp *t_envp, char **env);
+void				execute_cmd(t_command *cmd, char **env);
 void				show_command(t_command *command);
 // expansion functions
 char				*expansion(char *value, t_envp *list_envp);
@@ -116,6 +119,7 @@ t_lexer				*get_last_node(t_lexer *head);
 
 // parser functions
 t_command			*parser_phase(t_lexer *lexer);
+void				free_commands(t_command *command);
 
 // general functions
 void				minishell_process(t_lexer **lexer, t_envp *list_envp);

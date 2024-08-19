@@ -6,12 +6,23 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/17 13:43:35 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/19 22:31:05 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// void	print_minishell(void)
+// {
+// 	printf("\n");
+// 	printf("███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n");
+// 	printf("████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n");
+// 	printf("██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n");
+// 	printf("██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n");
+// 	printf("██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n");
+// 	printf("╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n");
+// 	printf("\n");
+// }
 char	**add_command_to_array(char **cmd_chain, char *cmd)
 {
 	int		i;
@@ -149,7 +160,7 @@ void	show_command(t_command *command)
 		printf("command-%i: ", j + 1);
 		while (current->command_chain[i] != NULL)
 		{
-			printf("arg[%i] = %s, ",  i, current->command_chain[i]);
+			printf("arg[%i] = %s, ", i, current->command_chain[i]);
 			i++;
 		}
 		printf("\n");
@@ -173,11 +184,15 @@ void	show_command(t_command *command)
 		j++;
 	}
 }
+
 void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 {
 	char		*input;
 	t_command	*command;
+	char		**env;
 
+	input = NULL;
+	//print_minishell();
 	while (1)
 	{
 		input = readline("minishell$ ");
@@ -198,6 +213,7 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 			continue ;
 		}
 		lexer_phase(lexer, input, list_envp);
+		free(input);
 		// if (syntax_error(*lexer))
 		// {
 		// 	free_list(lexer);
@@ -209,9 +225,13 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		command = parser_phase(*lexer);
 		// for debugging
 		// show_command(command);
-		execute_command(command, &list_envp);
+		env = add_env_arr(list_envp);
+		execute_command(command, list_envp,env);
+		// wait(NULL);
+		// printf ("%s\n",input);
 		free_list(lexer);
-		free(input);
+		free_commands(command);
+		// printf("hhhhhhh\n");
 	}
 }
 

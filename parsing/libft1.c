@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:09 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/16 10:48:12 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/19 15:46:38 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,45 @@ void	free_list(t_lexer **lexer)
 	}
 	*lexer = NULL;
 }
+void free_files(t_file *file)
+{
+    t_file *temp;
 
+    while (file)
+    {
+        temp = file;
+        file = file->next;
+        if (temp->file_name)
+            free(temp->file_name);
+        free(temp);
+    }
+}
+
+void free_command_chain(char **command_chain)
+{
+    if (command_chain)
+    {
+        for (int i = 0; command_chain[i] != NULL; i++)
+        {
+            free(command_chain[i]);
+        }
+        free(command_chain);
+    }
+}
+
+void free_commands(t_command *command)
+{
+    t_command *temp;
+
+    while (command)
+    {
+        temp = command;
+        command = command->next;
+        free_command_chain(temp->command_chain);
+        free_files(temp->file);
+        free(temp);
+    }
+}
 t_envp	*create_environment_node(char **envp)
 {
 	t_envp	*list;
