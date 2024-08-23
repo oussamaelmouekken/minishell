@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/19 22:40:12 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/24 00:49:29 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,39 @@
 // 	return (count);
 // }
 
-void	exe(t_command *cmd, t_envp **envp,char **env)
+void	exe_builtins(t_command *cmd, t_envp **envp)
 {
 	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
 		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
+	{
 		afficher_env(cmd, *envp);
+	}
 	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
 		&& cmd->command_chain[1] == NULL)
-		{
-			printf("hhhhhhhhh\n");
-			pwd();
-		}
+	{
+		pwd();
+	}
+	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
+		cd(cmd, *envp);
+	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
+		echo_n(cmd);
+	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
+		unset(cmd, envp);
+	//
+	return ;
+}
+void	exe(t_command *cmd, t_envp **envp, char **env)
+{
+	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
+		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
+	{
+		afficher_env(cmd, *envp);
+	}
+	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
+		&& cmd->command_chain[1] == NULL)
+	{
+		pwd();
+	}
 	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
 		cd(cmd, *envp);
 	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
@@ -133,11 +155,128 @@ void	execute_cmd(t_command *cmd, char **env)
 	}
 }
 
+// void	execute_command(t_command *cmd, t_envp *envp, char **env)
+// {
+// 	int	fd_in;
+// 	int	fd_out;
+// 	int	nb;
+// 	nb = nbr_cmd(cmd);
+// 	int	fd[nb - 1][2];
+// 	int	out;
+// 	int	pid[nb];
+// 	int	i;
+
+// 	if (nb <= 0)
+// 		return ;
+// 	i = 0;
+// 	if (env == NULL)
+// 		return ;
+// 	fd_in = 0; // For the first command, input is from stdin
+// 	if (is_builtins(cmd) && nb == 1)
+// 	{
+// 		out = dup(1);
+// 		fd_in = infile(cmd);
+// 		if (fd_in > 0)
+// 		{
+// 			dup2(fd_in, 0);
+// 			close(fd_in);
+// 		}
+// 		fd_out = outfile(cmd);
+// 		if (fd_out > 0)
+// 		{
+// 			dup2(fd_out, 1);
+// 			close(fd_out);
+// 		}
+// 		if (fd_in < 0 || fd_out < 0)
+// 			exit(1);
+// 		exe_builtins(cmd, &envp);
+// 		if (fd_in != 0)
+// 			close(fd_in);
+// 		dup2(out, 1);
+// 		close(out);
+// 	}
+// 	else
+// 	{
+// 		while (cmd && i < nb)
+// 		{
+// 			if (cmd->next != NULL)
+// 			{
+// 				if (pipe(fd[i]) == -1)
+// 				{
+// 					perror("pipe error");		close(var->fd_in);
+
+// 			{
+// 				perror("fork error");
+// 				return ;
+// 			}
+// 			else if (pid[i] == 0)
+// 			{ // Child process
+// 				if (fd_in != 0)
+// 				{
+// 					dup2(fd_in, 0);
+// 					close(fd_in);
+// 				}
+// 				if (cmd->next != NULL)
+// 				{
+// 					dup2(fd[i][1], 1);
+// 					close(fd[i][1]);
+// 				}
+// 				close(fd[i][0]);
+// 				// Close all pipe ends in the child process
+// 				fd_in = infile(cmd);
+// 				if (fd_in > 0)
+// 				{
+// 					dup2(fd_in, 0);
+// 					close(fd_in);
+// 				}
+// 				fd_out = outfile(cmd);
+// 				if (fd_out > 0)
+// 				{
+// 					dup2(fd_out, 1);
+// 					close(fd_out);
+// 				}
+// 				if (fd_in < 0 || fd_out < 0)
+// 					exit(1);
+// 				exe(cmd, &envp, env);
+// 			}
+// 			else
+// 			{ // Parent process
+// 				//while()
+// 				if (fd_in != 0)
+// 				{
+// 					close(fd_in);
+// 				}
+// 				if (cmd->next != NULL)
+// 				{
+// 					close(fd[i][1]);
+// 					fd_in = fd[i][0];
+// 				}
+// 			}
+// 			cmd = cmd->next;
+// 			i++;
+// 		}
+// 		i = 0;
+// 		while(i < nb - 1)
+// 		{
+// 			close(fd[i][0]);
+// 			close(fd[i][1]);
+// 			i++;
+// 		}
+// 		i = 0;
+// 		while (i < nb)
+// 		{
+// 				waitpid(pid[i], NULL, 0);
+// 				i++;
+// 		}
+// 		// Close remaining file descriptors in the parent process
+// 	}
+// }
+
 int	check_file(int fd)
 {
 	if (fd < 0)
 	{
-		perror("Error opening file");
+		perror("open file");
 		return (0);
 	}
 	return (1);
@@ -154,7 +293,7 @@ int	infile(t_command *cmd)
 	{
 		if (file->file_type == REDIRECT_IN)
 		{
-			fd_in = open(file->file_name, O_RDONLY | O_CREAT);
+			fd_in = open(file->file_name, O_RDONLY);
 			if (check_file(fd_in) == 0)
 				return (-1);
 		}
@@ -174,7 +313,7 @@ int	outfile(t_command *cmd)
 	{
 		if (file->file_type == REDIRECT_OUT)
 		{
-			fd_out = open(file->file_name, O_RDWR | O_CREAT);
+			fd_out = open(file->file_name, O_RDWR | O_CREAT | O_TRUNC, 0664);
 			if (check_file(fd_out) == 0)
 				return (-1);
 		}
@@ -182,75 +321,177 @@ int	outfile(t_command *cmd)
 	}
 	return (fd_out);
 }
-
-void	execute_command(t_command *cmd, t_envp *envp, char **env)
+int	is_builtins(t_command *cmd)
 {
-	int	fd_in;
-	int	fd_out;
-	int	fd[2];
-	int	pid;
+	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
+		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
+	{
+		return (1);
+	}
+	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
+		&& cmd->command_chain[1] == NULL)
+	{
+		return (1);
+	}
+	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
+		return (1);
+	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
+		return (1);
+	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
+		return (1);
+	return (0);
+}
+int	nbr_cmd(t_command *cmd)
+{
+	int	i;
 
-	if (env == NULL)
-		return ;
-	fd_in = 0;
+	i = 0;
+	i = 0;
 	while (cmd)
 	{
-		// Create a pipe if there is another command in the pipeline
-		if (cmd->next != NULL)
+		i++;
+		cmd = cmd->next;
+	}
+	return (i);
+}
+void	single_cmd(t_us *var, t_command *cmd, t_envp *envp)
+{
+	int	out;
+
+	out = dup(1);
+	var->fd_in = infile(cmd);
+	if (var->fd_in > 0)
+	{
+		dup2(var->fd_in, 0);
+		close(var->fd_in);
+	}
+	var->fd_out = outfile(cmd);
+	if (var->fd_out > 0)
+	{
+		dup2(var->fd_out, 1);
+		close(var->fd_out);
+	}
+	if (var->fd_in < 0 || var->fd_out < 0)
+		exit(1);
+	exe_builtins(cmd, &envp);
+	if (var->fd_in != 0)
+		close(var->fd_in);
+	dup2(out, 1);
+	close(out);
+}
+void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
+{
+	if (i > 0) // not the first cmd
+		dup2(var->fd[i - 1][0], 0);
+	if (cmd->next != NULL)
+		dup2(var->fd[i][1], 1);
+	close_all(var);
+	var->fd_in = infile(cmd);
+	if (var->fd_in > 0)
+	{
+		dup2(var->fd_in, 0);
+		close(var->fd_in);
+	}
+	var->fd_out = outfile(cmd);
+	if (var->fd_out > 0)
+	{
+		dup2(var->fd_out, 1);
+		close(var->fd_out);
+	}
+	if (var->fd_in < 0 || var->fd_out < 0)
+		exit(1);
+	exe(cmd, &envp, env);
+}
+void	perent(t_us *var, t_command *cmd, int i)
+{
+	if (i > 0)
+	{
+		close(var->fd[i - 1][0]);
+		// Parent closes the read end of the previous pipe
+	}
+	(void)i;
+	if(cmd == NULL)
+	 return;
+	if (cmd->next != NULL)
+	{
+		close(var->fd[i][1]); // Parent closes the write end of the current pipe
+	}
+}
+void	wait_child(t_us *var)
+{
+	int	i;
+
+	i = 0;
+	while (i < var->nb_cmd)
+	{
+		waitpid(var->pid[i], NULL, 0);
+		i++;
+	}
+	close_all(var);
+}
+
+void	close_all(t_us *var)
+{
+	int	i;
+
+	i = 0;
+	while (i < (var->nb_cmd - 1))
+	{
+		if (var->fd[i][0] != -1)
+			close(var->fd[i][0]);
+		if (var->fd[i][1] != -1)
+			close(var->fd[i][1]);
+		i++;
+	}
+}
+void	var_use(t_command *cmd, t_us *var)
+{
+	int	i;
+
+	i = 0;
+	var->k = 0;
+	var->fd_in = 0;
+	var->fd_out = 1;
+	var->nb_cmd = nbr_cmd(cmd);
+	if (var->nb_cmd == 1 && is_builtins(cmd) == 0)
+		var->pid = malloc(sizeof(int) * var->nb_cmd);
+	else if (var->nb_cmd > 1)
+	{
+		var->pid = malloc(sizeof(int) * var->nb_cmd);
+		var->fd = malloc(sizeof(int *) * (var->nb_cmd - 1));
+		i = 0;
+		while (i < (var->nb_cmd - 1))
 		{
-			if (pipe(fd) == -1)
-			{
-				perror("pipe error");
-				return ;
-			}
-		}
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork error");
-			return ;
-		}
-		else if (pid == 0) // Child process
-		{
-			if (fd_in != 0)
-			{
-				dup2(fd_in, 0);
-				close(fd_in);
-			}
-			if (cmd->next != NULL)
-			{
-				dup2(fd[1], 1);
-				close(fd[1]);
-				close(fd[0]);
-			}
-			fd_in = infile(cmd);
-			if (fd_in > 0)
-			{
-				dup2(fd_in, 0);
-				close(fd_in);
-			}
-			fd_out = outfile(cmd);
-			if (fd_out > 0)
-			{
-				dup2(fd_out, 1);
-				close(fd_out);
-			}
-			if (fd_in < 0 || fd_out < 0)
-			{
-				printf("error open\n");
-				exit(1);
-			}
-			exe(cmd, &envp,env);
-		}
-		else // Parent process
-		{
-			wait(NULL);
-			if (fd_in != 0)
-				close(fd_in);
-			if (cmd->next != NULL)
-				close(fd[1]);
-			fd_in = fd[0];
-			cmd = cmd->next;
+			var->fd[i] = malloc(sizeof(int) * 2);
+			pipe(var->fd[i]);///// bash ithlo kamlin bash close ikhdm hntach tanklosi kolchi 
+			i++;
 		}
 	}
+}
+void	execute_command(t_command *cmd, t_envp *envp, char **env)
+{
+	t_us	var;
+
+	var_use(cmd, &var);
+	if (is_builtins(cmd) && var.nb_cmd == 1) // simple cmd
+	{
+		single_cmd(&var, cmd, envp);
+		return ;
+	}
+	while (cmd != NULL) // other cmd
+	{
+		if (pipe(var.fd[var.k]) == -1 && var.k < var.nb_cmd - 1)
+		{
+			perror("error pipe");
+			return ;
+		}
+		var.pid[var.k] = fork();
+		if (var.pid[var.k] == 0)
+			child(cmd, &var, envp, env, var.k);
+		else
+			perent(&var, cmd, var.k);
+		cmd = cmd->next;
+		var.k++;
+	}
+	wait_child(&var);
 }

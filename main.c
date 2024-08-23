@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/19 22:31:05 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/23 22:20:10 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,8 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 	char		*input;
 	t_command	*command;
 	char		**env;
+	int stdin_ = dup(0);
+	int stdout_ = dup(1);
 
 	input = NULL;
 	//print_minishell();
@@ -231,12 +233,15 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		// printf ("%s\n",input);
 		free_list(lexer);
 		free_commands(command);
+		dup2(stdin_, 0);
+		dup2(stdout_, 1);
 		// printf("hhhhhhh\n");
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
+	printf("parent = %d\n", getpid());
 	t_lexer	*lexer;
 	t_envp	*env;
 

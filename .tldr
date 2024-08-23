@@ -43,9 +43,9 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": 359,
-			"y": -6.5,
-			"lastActivityTimestamp": 1724082499257,
+			"x": 868,
+			"y": 345,
+			"lastActivityTimestamp": 1724428231081,
 			"meta": {}
 		},
 		{
@@ -74,8 +74,8 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 958,
-				"h": 929
+				"w": 998,
+				"h": 925
 			},
 			"insets": [
 				false,
@@ -99,16 +99,16 @@
 			"meta": {},
 			"duplicateProps": null,
 			"id": "instance:instance",
-			"currentPageId": "page:page",
+			"currentPageId": "page:6DBfEieiNEciUiMQBEUFI",
 			"typeName": "instance"
 		},
 		{
-			"editingShapeId": "shape:3pjmF5a9FGNt1ql0cIVfp",
+			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [
 				"shape:3pjmF5a9FGNt1ql0cIVfp"
 			],
-			"hoveredShapeId": "shape:3pjmF5a9FGNt1ql0cIVfp",
+			"hoveredShapeId": null,
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -118,8 +118,8 @@
 			"typeName": "instance_page_state"
 		},
 		{
-			"x": 185,
-			"y": 257.5,
+			"x": 281.5,
+			"y": 484.59765625,
 			"z": 1,
 			"meta": {},
 			"id": "camera:page:page",
@@ -214,7 +214,7 @@
 				"color": "black",
 				"size": "m",
 				"w": 278,
-				"text": "if outfile exit \nelse outfile ",
+				"text": "if outfile exit \nelse outfile",
 				"font": "draw",
 				"textAlign": "start",
 				"autoSize": false,
@@ -222,6 +222,57 @@
 			},
 			"parentId": "page:page",
 			"index": "a58oK",
+			"typeName": "shape"
+		},
+		{
+			"meta": {},
+			"id": "page:6DBfEieiNEciUiMQBEUFI",
+			"name": "Page 2",
+			"index": "a23QZ",
+			"typeName": "page"
+		},
+		{
+			"x": 0,
+			"y": 0,
+			"z": 1,
+			"meta": {},
+			"id": "camera:page:6DBfEieiNEciUiMQBEUFI",
+			"typeName": "camera"
+		},
+		{
+			"editingShapeId": null,
+			"croppingShapeId": null,
+			"selectedShapeIds": [],
+			"hoveredShapeId": null,
+			"erasingShapeIds": [],
+			"hintingShapeIds": [],
+			"focusedGroupId": null,
+			"meta": {},
+			"id": "instance_page_state:page:6DBfEieiNEciUiMQBEUFI",
+			"pageId": "page:6DBfEieiNEciUiMQBEUFI",
+			"typeName": "instance_page_state"
+		},
+		{
+			"x": 191,
+			"y": 131.8046875,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:Mku7oDiUmxD5VuWmGtvT7",
+			"type": "text",
+			"props": {
+				"color": "black",
+				"size": "m",
+				"w": 357,
+				"text": "int *pid ;\n\npid[0] ;\npid[1];\npiid[2];\n\n\nint **fd;\n\nfd[0][0];      fd[1][0]\nfd[0][1];       fd[1][1]",
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": false,
+				"scale": 1
+			},
+			"parentId": "page:6DBfEieiNEciUiMQBEUFI",
+			"index": "a1",
 			"typeName": "shape"
 		}
 	]

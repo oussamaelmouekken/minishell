@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/19 22:29:11 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/24 00:03:03 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,18 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+
+typedef struct t_us
+{
+	int				fd_in;
+	int				fd_out;
+	int				nb_cmd;
+	int				*pid;
+	int				**fd;
+	int				k;
+
+}					t_us;
+
 enum				token_type
 {
 	PIPE,            // = |
@@ -63,8 +75,10 @@ typedef struct command
 	t_file			*file;
 	struct command	*next;
 }					t_command;
+
 // execution part
 // void				exe(char *line, char **av, t_envp **env);
+void				close_all(t_us *var);
 void				print_minishell(void);
 char				**add_env_arr(t_envp *env);
 void				pwd(void);

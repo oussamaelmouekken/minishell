@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/17 22:00:08 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/22 21:10:22 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ void	env_egal_null(t_envp **env)
 		return ;
 	}
 	ft_add_value_env("SHLVL=1", env);
+	// add another value and key 
 }
 t_envp	*add_env(char **env)
 {
