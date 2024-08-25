@@ -6,11 +6,25 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/22 21:10:22 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/25 19:50:15 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+char	*ft_getenv(t_envp *env, char *key)
+{
+	t_envp	*current;
+
+    current = env;
+    while (current != NULL)
+    {
+        if (ft_strcmp(current->key, key) == 0)
+            return (current->value);
+        current = current->next;
+    }
+    return (NULL);
+}
 
 char	*to_fin(char *str)
 {
@@ -155,7 +169,7 @@ void	afficher_env(t_command*cmd, t_envp *env)
 
 	tmp = env;
 	i = 0;
-	if (ft_strcmp(cmd->command_chain[0], "env") == 0)
+	if (ft_strcmp(cmd->command_chain[0], "env") == 0) // env with no options or arguments
 	{
 		while (cmd->command_chain[i])
 		{

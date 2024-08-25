@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 14:49:09 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/17 21:17:18 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/25 19:48:46 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void change_old_new_pwd(t_envp *env,char newpwd[4096], char oldpwd[4096])
 	}
 	return;
 }
-char *ft_getenv(char *variable, t_envp *env)
+char *ft_setenv(char *variable, t_envp *env)
 {
 	t_envp	*tmp;
 	char	*my_env;
@@ -71,7 +71,7 @@ void	cd(t_command *cmd ,t_envp *env)
 
 	if (cmd->command_chain[1] == NULL)
 	{
-		path = ft_getenv("HOME", env);
+		path = ft_setenv("HOME", env);
 		if (path == NULL)
 		{
 			printf("cd: HOME not set\n");

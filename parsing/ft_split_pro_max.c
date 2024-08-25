@@ -1,36 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
+/*   ft_split_pro_max.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 14:26:50 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/25 19:54:32 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/25 19:36:30 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-int	count_words1(const char *str, char c)
+int count_words(char *s)
 {
-	int	count;
-	int	i;
+	int count = 0;
+	int i = 0;
+	bool in_quotes = false;
 
-	i = 0;
-	count = 0;
-	while (str && str[i])
+	while (s && s[i] != '\0')
 	{
-		if (str[i] != c)
-		{
-			count++;
-			while (str[i] && str[i] != c)
-				i++;
-		}
-		else
+		while ((s[i] == ' ' || s[i] == '\t') && !in_quotes)
 			i++;
+		if (s[i] == '\0')
+			break;
+		count++;
+		while (s[i] != '\0' && (in_quotes || (s[i] != ' ' && s[i] != '\t')))
+		{
+			if (s[i] == '"')
+				in_quotes = !in_quotes;
+			i++;
+		}
 	}
-	return (count);
+	return count;
 }
 
 static char	**free_list(char **str, int n)
@@ -44,27 +46,35 @@ static char	**free_list(char **str, int n)
 	return (NULL);
 }
 
-char	**ft_split(char  *s, char c)
-{
-	char	**ptr;
-	int		i;
-	int		j;
-	int		n;
 
-	ptr = (char **)malloc((count_words1(s, c) + 1) * sizeof(char *));
+char **ft_split_pro_max(char *s)
+{
+	char **ptr;
+	int i;
+	int j;
+	int n;
+	bool in_quotes;
+
+	ptr = (char **)malloc((count_words(s) + 1) * sizeof(char *));
 	if (ptr == NULL)
 		return (NULL);
 	i = 0;
 	n = 0;
+	in_quotes = false;
 	while (s && s[i] != '\0')
 	{
-		while (s[i] == c)
+		while ((s[i] == ' ' || s[i] == '\t') && !in_quotes)
 			i++;
 		if (s[i] == '\0')
-			break ;
+			break;
 		j = 0;
-		while (s[i] != '\0' && s[i] != c && j++ >= 0)
+		while (s[i] != '\0' && (in_quotes || (s[i] != ' ' && s[i] != '\t')))
+		{
+			if (s[i] == '"')
+				in_quotes = !in_quotes;
 			i++;
+			j++;
+		}
 		ptr[n++] = ft_substr(s, i - j, j);
 		if (ptr[n - 1] == NULL)
 			return (free_list(ptr, n - 1));

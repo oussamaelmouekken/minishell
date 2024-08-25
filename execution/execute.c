@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/24 00:49:29 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/25 19:04:58 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,7 @@ int	check_file(int fd)
 	return (1);
 }
 
-int	infile(t_command *cmd)
+int	infile(t_command *cmd, t_us *var)
 {
 	t_file	*file;
 	int		fd_in;
@@ -297,6 +297,8 @@ int	infile(t_command *cmd)
 			if (check_file(fd_in) == 0)
 				return (-1);
 		}
+		else if (file->file_type == REDIRECT_INPUT)
+			fd_in = var->fd_herdoc;
 		file = file->next;
 	}
 	return (fd_in);
@@ -317,10 +319,17 @@ int	outfile(t_command *cmd)
 			if (check_file(fd_out) == 0)
 				return (-1);
 		}
+		else if (file->file_type == REDIRECT_APPEND)
+		{
+			fd_out = open(file->file_name, O_RDWR | O_CREAT | O_APPEND, 0664);
+			if (check_file(fd_out) == 0)
+				return (-1);
+		}
 		file = file->next;
 	}
 	return (fd_out);
 }
+
 int	is_builtins(t_command *cmd)
 {
 	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
@@ -359,7 +368,7 @@ void	single_cmd(t_us *var, t_command *cmd, t_envp *envp)
 	int	out;
 
 	out = dup(1);
-	var->fd_in = infile(cmd);
+	var->fd_in = infile(cmd, var);
 	if (var->fd_in > 0)
 	{
 		dup2(var->fd_in, 0);
@@ -386,7 +395,7 @@ void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
 	if (cmd->next != NULL)
 		dup2(var->fd[i][1], 1);
 	close_all(var);
-	var->fd_in = infile(cmd);
+	var->fd_in = infile(cmd, var);
 	if (var->fd_in > 0)
 	{
 		dup2(var->fd_in, 0);
@@ -409,9 +418,6 @@ void	perent(t_us *var, t_command *cmd, int i)
 		close(var->fd[i - 1][0]);
 		// Parent closes the read end of the previous pipe
 	}
-	(void)i;
-	if(cmd == NULL)
-	 return;
 	if (cmd->next != NULL)
 	{
 		close(var->fd[i][1]); // Parent closes the write end of the current pipe
@@ -451,7 +457,9 @@ void	var_use(t_command *cmd, t_us *var)
 	i = 0;
 	var->k = 0;
 	var->fd_in = 0;
+	var->fd_herdoc = 0;
 	var->fd_out = 1;
+	var->nbr_herdoc = count_herdoc(cmd);
 	var->nb_cmd = nbr_cmd(cmd);
 	if (var->nb_cmd == 1 && is_builtins(cmd) == 0)
 		var->pid = malloc(sizeof(int) * var->nb_cmd);
@@ -463,16 +471,32 @@ void	var_use(t_command *cmd, t_us *var)
 		while (i < (var->nb_cmd - 1))
 		{
 			var->fd[i] = malloc(sizeof(int) * 2);
-			pipe(var->fd[i]);///// bash ithlo kamlin bash close ikhdm hntach tanklosi kolchi 
+			pipe(var->fd[i]);
+			///// bash ithlo kamlin bash close ikhdm hntach tanklosi kolchi
 			i++;
 		}
 	}
+}
+int	var_use_and_herdoc(t_command *cmd, t_us *var)
+{
+	if (cmd == NULL)
+		return (0);
+	var_use(cmd, var);
+	if (var->nbr_herdoc > 16)
+	{
+		printf("maximum here-document count exceeded\n");
+		return (0);
+	}
+	if (var->nbr_herdoc >= 1)
+		herdoc(cmd, var);
+	return (1);
 }
 void	execute_command(t_command *cmd, t_envp *envp, char **env)
 {
 	t_us	var;
 
-	var_use(cmd, &var);
+	if (var_use_and_herdoc(cmd, &var) == 0) // herdoc and use variable
+		return ;
 	if (is_builtins(cmd) && var.nb_cmd == 1) // simple cmd
 	{
 		single_cmd(&var, cmd, envp);
