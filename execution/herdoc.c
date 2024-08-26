@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/24 20:38:19 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/25 18:57:12 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/26 18:30:57 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,11 @@ void	herdoc(t_command *cmd, t_us *var)
 					}
 					str_line = ft_strjoin(str_line, "\n");
 					write(fd[1], str_line, ft_strlen(str_line));
-				    free(str_line);
+					free(str_line);
 				}
+				var->fd_herdoc = fd[0];
+				close(fd[1]);
 			}
-            var->fd_herdoc = fd[0];
-            close(fd[1]);
 			f = f->next;
 		}
 		cmd = cmd->next;

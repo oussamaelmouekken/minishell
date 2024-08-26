@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/25 19:04:58 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/26 18:52:36 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,123 +155,6 @@ void	execute_cmd(t_command *cmd, char **env)
 	}
 }
 
-// void	execute_command(t_command *cmd, t_envp *envp, char **env)
-// {
-// 	int	fd_in;
-// 	int	fd_out;
-// 	int	nb;
-// 	nb = nbr_cmd(cmd);
-// 	int	fd[nb - 1][2];
-// 	int	out;
-// 	int	pid[nb];
-// 	int	i;
-
-// 	if (nb <= 0)
-// 		return ;
-// 	i = 0;
-// 	if (env == NULL)
-// 		return ;
-// 	fd_in = 0; // For the first command, input is from stdin
-// 	if (is_builtins(cmd) && nb == 1)
-// 	{
-// 		out = dup(1);
-// 		fd_in = infile(cmd);
-// 		if (fd_in > 0)
-// 		{
-// 			dup2(fd_in, 0);
-// 			close(fd_in);
-// 		}
-// 		fd_out = outfile(cmd);
-// 		if (fd_out > 0)
-// 		{
-// 			dup2(fd_out, 1);
-// 			close(fd_out);
-// 		}
-// 		if (fd_in < 0 || fd_out < 0)
-// 			exit(1);
-// 		exe_builtins(cmd, &envp);
-// 		if (fd_in != 0)
-// 			close(fd_in);
-// 		dup2(out, 1);
-// 		close(out);
-// 	}
-// 	else
-// 	{
-// 		while (cmd && i < nb)
-// 		{
-// 			if (cmd->next != NULL)
-// 			{
-// 				if (pipe(fd[i]) == -1)
-// 				{
-// 					perror("pipe error");		close(var->fd_in);
-
-// 			{
-// 				perror("fork error");
-// 				return ;
-// 			}
-// 			else if (pid[i] == 0)
-// 			{ // Child process
-// 				if (fd_in != 0)
-// 				{
-// 					dup2(fd_in, 0);
-// 					close(fd_in);
-// 				}
-// 				if (cmd->next != NULL)
-// 				{
-// 					dup2(fd[i][1], 1);
-// 					close(fd[i][1]);
-// 				}
-// 				close(fd[i][0]);
-// 				// Close all pipe ends in the child process
-// 				fd_in = infile(cmd);
-// 				if (fd_in > 0)
-// 				{
-// 					dup2(fd_in, 0);
-// 					close(fd_in);
-// 				}
-// 				fd_out = outfile(cmd);
-// 				if (fd_out > 0)
-// 				{
-// 					dup2(fd_out, 1);
-// 					close(fd_out);
-// 				}
-// 				if (fd_in < 0 || fd_out < 0)
-// 					exit(1);
-// 				exe(cmd, &envp, env);
-// 			}
-// 			else
-// 			{ // Parent process
-// 				//while()
-// 				if (fd_in != 0)
-// 				{
-// 					close(fd_in);
-// 				}
-// 				if (cmd->next != NULL)
-// 				{
-// 					close(fd[i][1]);
-// 					fd_in = fd[i][0];
-// 				}
-// 			}
-// 			cmd = cmd->next;
-// 			i++;
-// 		}
-// 		i = 0;
-// 		while(i < nb - 1)
-// 		{
-// 			close(fd[i][0]);
-// 			close(fd[i][1]);
-// 			i++;
-// 		}
-// 		i = 0;
-// 		while (i < nb)
-// 		{
-// 				waitpid(pid[i], NULL, 0);
-// 				i++;
-// 		}
-// 		// Close remaining file descriptors in the parent process
-// 	}
-// }
-
 int	check_file(int fd)
 {
 	if (fd < 0)
@@ -332,6 +215,8 @@ int	outfile(t_command *cmd)
 
 int	is_builtins(t_command *cmd)
 {
+	if(cmd->command_chain == NULL)
+		return 0;
 	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
 		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
 	{

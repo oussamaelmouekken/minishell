@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/25 19:52:14 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/26 12:16:32 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+
+typedef struct for_free
+{
+	char			*str;
+	struct for_free	*next;
+}					t_for_free;
 
 typedef struct t_us
 {
