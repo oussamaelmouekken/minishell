@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/26 12:16:32 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/29 08:35:34 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,14 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-typedef struct for_free
-{
-	char			*str;
-	struct for_free	*next;
-}					t_for_free;
+extern int g_exit_status;
+
+
+// typedef struct for_free
+// {
+// 	char			*str;
+// 	struct for_free	*next;
+// }					t_for_free;
 
 typedef struct t_us
 {
@@ -86,6 +89,7 @@ typedef struct command
 }					t_command;
 // execution part
 // void				exe(char *line, char **av, t_envp **env);
+void				my_exit(void);
 void				herdoc(t_command *cmd, t_us *var);
 int					count_herdoc(t_command *cmd);
 void				close_all(t_us *var);

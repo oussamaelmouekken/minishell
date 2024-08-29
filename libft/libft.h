@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:59:55 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/18 16:16:31 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/28 20:43:32 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 
 int					ft_atoi(const char *str);
 void				ft_bzero(void *s, size_t n);
-void				*ft_calloc(size_t count, size_t size);
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);
 int					ft_isascii(int n);
@@ -46,12 +45,10 @@ char				*ft_strjoin(char *s1, char *s2);
 int				ft_strlcat(char *dest, char *src,int dstsize);
 int					ft_strlcpy(char *dest, char *src, int dstsize);
 int					ft_strlen(char *str);
-char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 
 int					ft_strncmp(char *s1, char *s2, size_t n);
 char				*ft_strnstr(const char *str, const char *rechr, size_t len);
 char				*ft_strrchr(const char *str, int c);
-char				*ft_strtrim(char const *s, char const *set);
 char				*ft_substr(char *s, int start, int len);
 int					ft_tolower(int c);
 int					ft_toupper(int c);

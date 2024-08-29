@@ -6,12 +6,12 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/26 16:17:05 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/29 08:34:06 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+int g_exit_status = EXIT_SUCCESS;
 // void	print_minishell(void)
 // {
 // 	printf("\n");

@@ -6,82 +6,55 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/26 18:52:36 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/29 08:51:23 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-// int	f1;
-// 	int	f2;
-
-// 	f1 = open(av[1], O_RDWR | O_CREAT, 0644);
-// 	f2 = open(av[ac - 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
-// 	if (ac == 0)
-// 	{
-// 		printf("Error: command found\n");
-// 		return (1);
-// 	}
-// 	//pip_all(f1, f2, ac, av, env);
-
-// int	count_arg(int ac)
-// {
-// 	int	i;
-// 	int	count;
-
-// 	count = 0;
-// 	i = 2;
-// 	while (i < ac - 1)
-// 	{
-// 		count++;
-// 		i++;
-// 	}
-// 	return (count);
-// }
-
 void	exe_builtins(t_command *cmd, t_envp **envp)
 {
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
+	if (ft_cmp(cmd->command_chain[0], "env") == 0
 		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
 	{
 		afficher_env(cmd, *envp);
 	}
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
-		&& cmd->command_chain[1] == NULL)
-	{
+	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
 		pwd();
-	}
 	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
 		cd(cmd, *envp);
 	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
 		echo_n(cmd);
 	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
 		unset(cmd, envp);
-	//
+	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
+		my_exit();
 	return ;
 }
 void	exe(t_command *cmd, t_envp **envp, char **env)
 {
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
-		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
-	{
+	if ((ft_cmp(cmd->command_chain[0], "env") == 0
+			&& cmd->command_chain[1] == NULL) || (ft_cmp(cmd->command_chain[0],
+				"export") == 0))
 		afficher_env(cmd, *envp);
-	}
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
-		&& cmd->command_chain[1] == NULL)
-	{
+	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
 		pwd();
-	}
 	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
 		cd(cmd, *envp);
 	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
 		echo_n(cmd);
 	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
 		unset(cmd, envp);
-	else
+	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
+		my_exit();
+	if ((ft_cmp(cmd->command_chain[0], "env") == 0
+			&& cmd->command_chain[1] != NULL))
 	{
-		execute_cmd(cmd, env);
+		printf("env with not arg or options\n");
+		exit(1);
 	}
+	else
+		execute_cmd(cmd, env);
 	exit(1);
 }
 
@@ -215,23 +188,23 @@ int	outfile(t_command *cmd)
 
 int	is_builtins(t_command *cmd)
 {
-	if(cmd->command_chain == NULL)
-		return 0;
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0)
-		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
+	if (cmd->command_chain == NULL)
+		return (0);
+	if ((ft_cmp(cmd->command_chain[0], "env") == 0
+			&& cmd->command_chain[1] == NULL) || (ft_cmp(cmd->command_chain[0],
+				"export") == 0))
 	{
 		return (1);
 	}
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0
-		&& cmd->command_chain[1] == NULL)
-	{
+	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
 		return (1);
-	}
 	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
 		return (1);
 	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
 		return (1);
 	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
+		return (1);
+	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
 		return (1);
 	return (0);
 }
@@ -239,7 +212,6 @@ int	nbr_cmd(t_command *cmd)
 {
 	int	i;
 
-	i = 0;
 	i = 0;
 	while (cmd)
 	{
@@ -311,11 +283,15 @@ void	perent(t_us *var, t_command *cmd, int i)
 void	wait_child(t_us *var)
 {
 	int	i;
+	int	status;
 
 	i = 0;
+	status = 0;
 	while (i < var->nb_cmd)
 	{
-		waitpid(var->pid[i], NULL, 0);
+		waitpid(var->pid[i], &status, 0);
+		if (WIFEXITED(status) == 1)
+			g_exit_status = WEXITSTATUS(status);
 		i++;
 	}
 	close_all(var);
@@ -382,18 +358,19 @@ void	execute_command(t_command *cmd, t_envp *envp, char **env)
 
 	if (var_use_and_herdoc(cmd, &var) == 0) // herdoc and use variable
 		return ;
-	if (is_builtins(cmd) && var.nb_cmd == 1) // simple cmd
+	if (var.nb_cmd == 1 && is_builtins(cmd)) // simple cmd is builtins or other
 	{
 		single_cmd(&var, cmd, envp);
 		return ;
 	}
 	while (cmd != NULL) // other cmd
 	{
-		if (pipe(var.fd[var.k]) == -1 && var.k < var.nb_cmd - 1)
-		{
-			perror("error pipe");
-			return ;
-		}
+		if (var.nb_cmd > 1)
+			if (pipe(var.fd[var.k]) == -1 && var.k < var.nb_cmd - 1)
+			{
+				perror("error pipe");
+				return ;
+			}
 		var.pid[var.k] = fork();
 		if (var.pid[var.k] == 0)
 			child(cmd, &var, envp, env, var.k);

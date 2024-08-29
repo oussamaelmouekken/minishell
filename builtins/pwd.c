@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 14:46:50 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/09 17:10:29 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/28 17:12:57 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	pwd(void)
 	}
 	else
 	{
-		perror("error getcwd()");
+		perror("getcwd() error");
 		return ;
 	}
 }
