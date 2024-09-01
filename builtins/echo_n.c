@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 15:48:42 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/26 17:57:54 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:00:47 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,13 +85,13 @@ void	echo_n(t_command *cmd)
 			flag = 0;
 		if (flag == 0)
 		{
-			printf("%s", cmd->command_chain[i]);
+			write(1 , cmd->command_chain[i], ft_strlen(cmd->command_chain[i]));
 			if (cmd->command_chain[i + 1])
-				printf(" ");
+				write(1 , " ", 1);
 		}
 		i++;
 	}
 	if (check_newline(cmd->command_chain[1]))
-		printf("\n");
+		write(1 , "\n", 1);
 	return ;
 }

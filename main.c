@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/29 08:34:06 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/01 20:04:18 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void minishell_process(t_lexer **lexer, t_envp *list_envp)
 {
 	char *input;
 	t_command *command;
-	char **env;
+	//char **env;
 
 	while (1)
 	{
@@ -107,10 +107,10 @@ void minishell_process(t_lexer **lexer, t_envp *list_envp)
 		// 	continue ;
 		// }
 		command = parser_phase(*lexer);
-		env = add_env_arr(list_envp);
-        execute_command(command, list_envp,env);
+		//env = add_env_arr(list_envp);
+        //execute_command(command, list_envp,env);
 		// for debugging
-		//show_command(command);
+		show_command(command);
 		free_lexer_list(lexer);
 		free(input);
 	}
@@ -122,6 +122,8 @@ int	main(int argc, char **argv, char **envp)
 	t_envp	*env;
 
 	lexer = NULL;
+	signal(SIGINT,handl_sigint);
+	signal(SIGQUIT,SIG_IGN); //ignore in perent process
 	if (argc != 1 || argv == NULL)
 	{
 		printf("This program does not accept arguments\n");

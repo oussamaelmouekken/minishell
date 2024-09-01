@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:59:55 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/28 20:43:32 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/29 09:12:31 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-int					ft_atoi(const char *str);
+int					ft_atoi(char *str);
 void				ft_bzero(void *s, size_t n);
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);

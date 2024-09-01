@@ -41,7 +41,7 @@ char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
 	len_key = ft_strlen(key);
 	value = ft_getenv(list_envp, key);
 	if (ft_strcmp(key, "?") == 0)
-		value = ft_strdup("0");
+		value = ft_itoa(g_exit_status);
 	else if (ft_isdigit(key[0]))
 		value = key + 1;
 	else if (value == NULL)

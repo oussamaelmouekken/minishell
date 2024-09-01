@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/29 08:51:23 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/01 20:00:56 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	exe_builtins(t_command *cmd, t_envp **envp)
 	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
 		unset(cmd, envp);
 	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
-		my_exit();
+		my_exit(cmd);
 	return ;
 }
 void	exe(t_command *cmd, t_envp **envp, char **env)
@@ -46,8 +46,8 @@ void	exe(t_command *cmd, t_envp **envp, char **env)
 	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
 		unset(cmd, envp);
 	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
-		my_exit();
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0
+		my_exit(cmd);
+	else if ((ft_cmp(cmd->command_chain[0], "env") == 0
 			&& cmd->command_chain[1] != NULL))
 	{
 		printf("env with not arg or options\n");
@@ -55,7 +55,7 @@ void	exe(t_command *cmd, t_envp **envp, char **env)
 	}
 	else
 		execute_cmd(cmd, env);
-	exit(1);
+	exit(0);
 }
 
 char	**Path_env(char **env)
@@ -113,18 +113,19 @@ void	execute_cmd(t_command *cmd, char **env)
 		if (execve(cmd->command_chain[0], cmd->command_chain, env) == -1)
 		{
 			perror("execve error");
-			return ;
+			exit(1);
 		}
 	}
 	path = true_path(cmd->command_chain[0], env);
 	if (path == NULL)
 	{
-		printf("error access \n");
-		return ;
+		perror("command not found");
+		exit(127);
 	}
 	if (execve(path, cmd->command_chain, env) == -1)
 	{
 		perror("execve error");
+		exit(1);
 	}
 }
 
@@ -132,7 +133,7 @@ int	check_file(int fd)
 {
 	if (fd < 0)
 	{
-		perror("open file");
+		perror("open error");
 		return (0);
 	}
 	return (1);
@@ -147,6 +148,11 @@ int	infile(t_command *cmd, t_us *var)
 	file = cmd->file;
 	while (file != NULL)
 	{
+		if (file->is_ambiguous == true)
+		{
+			printf("minishell: %s: ambiguous redirect\n", file->file_name);
+			return (-1);
+		}
 		if (file->file_type == REDIRECT_IN)
 		{
 			fd_in = open(file->file_name, O_RDONLY);
@@ -169,6 +175,11 @@ int	outfile(t_command *cmd)
 	file = cmd->file;
 	while (file != NULL)
 	{
+		if (file->is_ambiguous == true)
+		{
+			printf("minishell: %s: ambiguous redirect\n", file->file_name);
+			return (-1);
+		}
 		if (file->file_type == REDIRECT_OUT)
 		{
 			fd_out = open(file->file_name, O_RDWR | O_CREAT | O_TRUNC, 0664);
@@ -245,8 +256,10 @@ void	single_cmd(t_us *var, t_command *cmd, t_envp *envp)
 	dup2(out, 1);
 	close(out);
 }
+
 void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
 {
+	signal(SIGQUIT, hanld_siquit);
 	if (i > 0) // not the first cmd
 		dup2(var->fd[i - 1][0], 0);
 	if (cmd->next != NULL)
@@ -270,6 +283,7 @@ void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
 }
 void	perent(t_us *var, t_command *cmd, int i)
 {
+	signal(SIGINT, SIG_IGN);
 	if (i > 0)
 	{
 		close(var->fd[i - 1][0]);
@@ -283,17 +297,23 @@ void	perent(t_us *var, t_command *cmd, int i)
 void	wait_child(t_us *var)
 {
 	int	i;
-	int	status;
 
 	i = 0;
-	status = 0;
 	while (i < var->nb_cmd)
 	{
-		waitpid(var->pid[i], &status, 0);
-		if (WIFEXITED(status) == 1)
-			g_exit_status = WEXITSTATUS(status);
+		waitpid(var->pid[i], &g_exit_status, 0);
+		if (WIFEXITED(g_exit_status))
+			g_exit_status = g_exit_status >> 8;
+		if (WIFSIGNALED(g_exit_status))
+		{
+			if (g_exit_status == 131) // exit status SIGQUIT in child
+				printf("Quit (core dumped)\n");
+			else /// SIGINT
+				printf("\n");
+		}
 		i++;
 	}
+	signal(SIGINT, handl_sigint);
 	close_all(var);
 }
 
@@ -333,12 +353,11 @@ void	var_use(t_command *cmd, t_us *var)
 		{
 			var->fd[i] = malloc(sizeof(int) * 2);
 			pipe(var->fd[i]);
-			///// bash ithlo kamlin bash close ikhdm hntach tanklosi kolchi
 			i++;
 		}
 	}
 }
-int	var_use_and_herdoc(t_command *cmd, t_us *var)
+int	var_use_and_herdoc(t_command *cmd, t_us *var, t_envp *env)
 {
 	if (cmd == NULL)
 		return (0);
@@ -349,20 +368,29 @@ int	var_use_and_herdoc(t_command *cmd, t_us *var)
 		return (0);
 	}
 	if (var->nbr_herdoc >= 1)
-		herdoc(cmd, var);
+	{
+		if (herdoc(cmd, var, env))
+			return (0);
+	}
 	return (1);
+}
+int	var_and_single_built(t_command *cmd, t_us *var, t_envp *envp)
+{
+	if (var_use_and_herdoc(cmd, var, envp) == 0)
+		return (1);
+	if (var->nb_cmd == 1 && is_builtins(cmd))
+	{
+		single_cmd(var, cmd, envp);
+		return (1);
+	}
+	return (0);
 }
 void	execute_command(t_command *cmd, t_envp *envp, char **env)
 {
 	t_us	var;
 
-	if (var_use_and_herdoc(cmd, &var) == 0) // herdoc and use variable
+	if (var_and_single_built(cmd, &var, envp))
 		return ;
-	if (var.nb_cmd == 1 && is_builtins(cmd)) // simple cmd is builtins or other
-	{
-		single_cmd(&var, cmd, envp);
-		return ;
-	}
 	while (cmd != NULL) // other cmd
 	{
 		if (var.nb_cmd > 1)

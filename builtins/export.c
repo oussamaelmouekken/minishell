@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/11 22:10:53 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/17 21:22:33 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/08/29 22:45:34 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,5 +334,4 @@ void	export(t_command*cmd, t_envp **env)
 		check_cmd(cmd->command_chain[i], *env);
 		i++;
 	}
-	//////// ba9i erro ila kan bzaf dyal largument
 }

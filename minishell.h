@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/29 08:35:34 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/01 19:35:38 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-extern int g_exit_status;
-
-
-// typedef struct for_free
-// {
-// 	char			*str;
-// 	struct for_free	*next;
-// }					t_for_free;
+extern int			g_exit_status;
 
 typedef struct t_us
 {
@@ -45,8 +38,8 @@ typedef struct t_us
 	int				*pid;
 	int				**fd;
 	int				k;
-
 }					t_us;
+
 enum				token_type
 {
 	PIPE,            // = |
@@ -89,11 +82,14 @@ typedef struct command
 }					t_command;
 // execution part
 // void				exe(char *line, char **av, t_envp **env);
-void				my_exit(void);
-void				herdoc(t_command *cmd, t_us *var);
+void				handl_sigint_herdoc(int sig);
+void				hanld_siquit(int sig);
+void				handl_sigint(int sig);
+void				my_exit(t_command *cmd);
+int				herdoc(t_command *cmd, t_us *var, t_envp *env);
 int					count_herdoc(t_command *cmd);
 void				close_all(t_us *var);
-void				print_minishell(void);
+// void				print_minishell(void);
 char				**add_env_arr(t_envp *env);
 void				pwd(void);
 void				cd(t_command *cmd, t_envp *env);
@@ -123,6 +119,7 @@ char				*replace_env_keys_with_values(char *str, char *key,
 int					get_target_dollar(char *str, char *key);
 void				remove_quotes(char **str);
 void				expansion_phase(t_lexer **lexer, t_envp *list_envp);
+char				*expansion(char *str, t_envp *list_envp);
 
 // string manipulation functions
 int					is_alnum_or_underscore(char c);
