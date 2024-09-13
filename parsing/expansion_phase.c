@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_phase.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 19:34:25 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/25 19:34:33 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/04 12:05:27 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ char *expansion(char *str, t_envp *list_envp)
 			i += 1;
 			key = append_alnum(key, str, &i);
 			final_str = replace_env_keys_with_values(final_str, key, list_envp);
+			free(key);
 			key = NULL;
 		}
 		else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '?')
@@ -91,6 +92,7 @@ char *expansion(char *str, t_envp *list_envp)
 			i += 2;
 			key = append_char_to_string(key, '?');
 			final_str = replace_env_keys_with_values(final_str, key, list_envp);
+			free(key);
 			key = NULL;
 		}
 		else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '$')
@@ -98,6 +100,7 @@ char *expansion(char *str, t_envp *list_envp)
 			i += 2;
 			key = append_char_to_string(key, '$');
 			final_str = replace_env_keys_with_values(final_str, key, list_envp);
+			free(key);
 			key = NULL;
 		}
 		else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/01 19:35:38 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:36:32 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-extern int			g_exit_status;
-
+# define G_tty "\033[1;32m"
+# define RESET "\033[0m"
 typedef struct t_us
 {
 	int				fd_in;
@@ -59,6 +59,7 @@ typedef struct lexer
 typedef struct envp
 {
 	char			*key;
+	char			caracter_egal;
 	char			*value;
 	bool			env_path;
 	bool			egal_exist;
@@ -80,13 +81,58 @@ typedef struct command
 	t_file			*file;
 	struct command	*next;
 }					t_command;
+
+typedef struct for_free
+{
+	int				g_exit_status;
+	int				kkk;
+	char			**env;
+	t_command		*cmd;
+	t_envp			*envp;
+	t_us			*var;
+	struct for_free	*next;
+}					t_global;
+
+extern t_global		var_globale;
+
 // execution part
-// void				exe(char *line, char **av, t_envp **env);
+char				*check_to_egal(char *first);
+char				*delet_plus(char *str);
+void				join_node(char *str, char *data_fin, t_envp **env);
+int					check_exist_node_with_ncmp(char *str, t_envp *env);
+int					check_exist_node_with_cmp(char *str, t_envp *env);
+int					check_plus(char *str);
+void				check_egal_and_addegal(char *str, t_envp **env);
+void				change_data(char *str, char *fin, t_envp **env);
+int					if_egal(char *str);
+int					ft_strlen_to_char(char *str, char c);
+void				free_2(char *first, char *fin);
+void				exe_builtins(t_command *cmd, t_envp **envp);
+void				exe(t_command *cmd, t_envp **envp, char **env);
+int					is_builtins(t_command *cmd);
+void				single_cmd(t_us *var, t_command *cmd, t_envp *envp);
+char				*true_path(char *cmd, char **env);
+void				change_shlvl(t_envp **envp);
+int					outfile(t_command *cmd);
+int					infile(t_command *cmd, t_us *var);
+void				perent(t_command *cmd, t_us *var);
+int					var_and_single_built(t_command *cmd, t_us *var,
+						t_envp *envp);
+int					nbr_cmd(t_command *cmd);
+void				free_envp(t_envp *env);
+void				free_all_in_perent(t_global var_globale);
+void				free_all_in_child(t_global *var_globale);
+void				free_var(t_us *var);
+void				free_file_list(t_file *file);
+void				free_command(t_command *cmd);
+void				free_double(char **str);
+void				free_command_list(t_command *cmd);
+///         free
 void				handl_sigint_herdoc(int sig);
 void				hanld_siquit(int sig);
 void				handl_sigint(int sig);
 void				my_exit(t_command *cmd);
-int				herdoc(t_command *cmd, t_us *var, t_envp *env);
+int					herdoc(t_command *cmd, t_us *var, t_envp *env);
 int					count_herdoc(t_command *cmd);
 void				close_all(t_us *var);
 // void				print_minishell(void);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 17:06:24 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/14 17:19:06 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/03 19:15:10 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ char	*ft_substr(char  *s, int start, int len)
 	{
 		len = ft_strlen(s) - start;
 	}
-	p = malloc((len + 1));
+	p = malloc((len + 1)); // i9dr iw93 double free  fsplit ila khdmt bmalloc dyali
 	ss = (char *)s;
 	if (!p)
 		return (NULL);

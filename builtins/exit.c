@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:44:45 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/29 17:18:23 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/12 17:20:47 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ int	util(t_command *cmd)
 	int	new_exit;
 
 	new_exit = 0;
-	printf("exit\n");
+	if(var_globale.var->nb_cmd == 1)
+		write(2, "exit\n", 5);
 	new_exit = ft_atoi(cmd->command_chain[1]);
 	return (new_exit);
 }
@@ -28,19 +29,20 @@ int	utils_exit(int is_numeric, t_command *cmd)
 	{
 		if (cmd->command_chain[2] != NULL)
 		{
-			printf("exit\nminishell : exit: to many argument\n");
-			g_exit_status = 1;
+			if (var_globale.var->nb_cmd == 1)
+				write(2, "exit\nexit: to many argument\n", 29);
+			var_globale.g_exit_status = 1;
 			return (1);
 		}
 		else
-			g_exit_status = util(cmd);
+			var_globale.g_exit_status = util(cmd);
 	}
 	else
 	{
-		printf("exit\nexit: %s: numeric argument required\n",
-			cmd->command_chain[1]);
-		g_exit_status = 2;
-		exit(g_exit_status);
+		if (var_globale.var->nb_cmd == 1)
+			write(2, "exit\nexit: numeric argument required\n", 37);
+		var_globale.g_exit_status = 2;
+		exit(var_globale.g_exit_status);
 	}
 	return (0);
 }
@@ -67,5 +69,7 @@ void	my_exit(t_command *cmd)
 		if (utils_exit(is_numeric, cmd) == 1)
 			return ;
 	}
-	exit(g_exit_status);
+	if (cmd->command_chain[1] == NULL && var_globale.var->nb_cmd == 1)
+		write(2, "exit\n", 5);
+	exit(var_globale.g_exit_status);
 }

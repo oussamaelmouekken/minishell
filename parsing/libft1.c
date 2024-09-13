@@ -89,6 +89,7 @@ t_lexer	*create_lexer_node(char *value, enum token_type type)
 	new_node->value = ft_strdup(value);
 	new_node->type = type;
 	new_node->next = NULL;
+	free(value);
 	return (new_node);
 }
 

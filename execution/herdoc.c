@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   herdoc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/24 20:38:19 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/01 19:42:31 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:10:02 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,19 @@ int	count_herdoc(t_command *cmd)
 	}
 	return (i);
 }
-int     wait_herdoc(int pid)
+int	wait_herdoc(int pid)
 {
-	waitpid(pid, &g_exit_status, 0);
-	if (WIFEXITED(g_exit_status))
-			g_exit_status = g_exit_status >> 8;
-	if(g_exit_status == 130)
+	waitpid(pid, &(var_globale.g_exit_status), 0);
+	if (WIFEXITED(var_globale.g_exit_status))
+		var_globale.g_exit_status = var_globale.g_exit_status >> 8;
+	if (var_globale.g_exit_status == 130)
 	{
-		printf("\n");
-		return 1;
+		write(2 , "\n", 1);
+		return (1);
 	}
-	return 0;
+	return (0);
 }
-int 	loop_herdoc(t_us *var, t_file *f, t_envp *env)
+int	loop_herdoc(t_us *var, t_file *f, t_envp *env)
 {
 	char	*str_line;
 	int		fd[2];
@@ -55,7 +55,7 @@ int 	loop_herdoc(t_us *var, t_file *f, t_envp *env)
 	{
 		signal(SIGINT, handl_sigint_herdoc);
 		close(fd[0]);
-		while ((str_line = readline("> ")) != NULL)
+		while ((str_line = readline(G_tty"> "RESET)) != NULL)
 		{
 			if (ft_cmp(str_line, f->file_name) == 0)
 			{
@@ -70,7 +70,9 @@ int 	loop_herdoc(t_us *var, t_file *f, t_envp *env)
 		}
 		if (str_line == NULL)
 		{
-			printf("minshell: here-document  delimited by end-of-file (wanted `%s')\n", f->file_name);
+			write(2, "minshell: here-document  delimited by end-of-file ", 51);
+			write(2 , f->file_name, ft_strlen(f->file_name));
+			write(2, "\n", 1);
 			exit(1);
 		}
 		close(fd[1]);
@@ -81,10 +83,10 @@ int 	loop_herdoc(t_us *var, t_file *f, t_envp *env)
 		signal(SIGINT, SIG_IGN);
 		var->fd_herdoc = fd[0];
 		close(fd[1]);
-		if(wait_herdoc(i))
-			return 1;
+		if (wait_herdoc(i))
+			return (1);
 	}
-	return 0;
+	return (0);
 }
 
 int	herdoc(t_command *cmd, t_us *var, t_envp *env)
@@ -98,12 +100,12 @@ int	herdoc(t_command *cmd, t_us *var, t_envp *env)
 		{
 			if (f->file_type == REDIRECT_INPUT)
 			{
-				if(loop_herdoc(var, f, env))
-					return 1;
+				if (loop_herdoc(var, f, env))
+					return (1);
 			}
 			f = f->next;
 		}
 		cmd = cmd->next;
 	}
-	return 0;
+	return (0);
 }

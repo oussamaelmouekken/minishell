@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/29 08:04:20 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/13 20:26:20 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ char	*ft_getenv(t_envp *env, char *key)
 	current = env;
 	while (current != NULL)
 	{
+		
 		if (ft_strcmp(current->key, key) == 0)
 			return (current->value);
 		current = current->next;
@@ -57,7 +58,7 @@ char	*to_egal(char *str)
 {
 	int		i;
 	int		j;
-	char	*s;
+	char	*s = NULL;
 
 	j = 0;
 	i = 0;
@@ -133,7 +134,6 @@ void	env_egal_null(t_envp **env)
 	}
 	ft_add_value_env("SHLVL=1", env);
 	ft_add_value_env("_=/usr/bin/env",env);
-	// add another value and key
 }
 t_envp	*add_env(char **env)
 {
@@ -148,7 +148,7 @@ t_envp	*add_env(char **env)
 		envp = (t_envp *)malloc(sizeof(t_envp));
 		if (envp == NULL)
 		{
-			printf("Error: command found probleme envp\n");
+			printf("Error: malloc \n");
 			return (NULL);
 		}
 		envp->key = to_egal(env[i]);
@@ -161,13 +161,15 @@ t_envp	*add_env(char **env)
 			i++;
 		}
 	}
+	change_shlvl(&envp);
 	return (envp);
 }
 void	afficher_env(t_command *cmd, t_envp *env)
 {
 	t_envp	*tmp;
-
 	tmp = env;
+	tmp->egal_exist = false;
+	tmp->env_path = false;
 	if (ft_strcmp(cmd->command_chain[0], "export") == 0)
 	{
 		if (cmd->command_chain[1] != NULL)

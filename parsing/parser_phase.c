@@ -1,13 +1,14 @@
 #include "../minishell.h"
 
-char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
+char	**add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 {
-	int i;
-	int j;
-	char **new_cmd_chain;
-	char **tmp;
-	int cout_words;
+	int		i;
+	int		j;
+	char	**new_cmd_chain;
+	char	**tmp;
+	int		cout_words;
 
+	new_cmd_chain = NULL;
 	cout_words = 0;
 	i = 0;
 	tmp = ft_split_pro_max(cmd);
@@ -16,6 +17,11 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 	if (cmd_chain == NULL)
 	{
 		new_cmd_chain = (char **)malloc(sizeof(char *) * (cout_words + 1));
+		if (!new_cmd_chain)
+		{
+			printf("Error: Memory allocation failed\n");
+			return (NULL);
+		}
 		while (i < cout_words)
 		{
 			new_cmd_chain[i] = ft_strdup(tmp[i]);
@@ -43,13 +49,16 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 		}
 		new_cmd_chain[i] = NULL;
 	}
+	free_double(tmp);
+	if (cmd_chain != NULL) // hntach taymaloci fi if o else
+		free_double(cmd_chain);
 	return (new_cmd_chain);
 }
-t_file *add_file_to_list(t_file **file, char *file_name,
-						 enum token_type file_type)
+t_file	*add_file_to_list(t_file **file, char *file_name,
+		enum token_type file_type)
 {
-	t_file *new_file;
-	t_file *current;
+	t_file	*new_file;
+	t_file	*current;
 
 	new_file = (t_file *)malloc(sizeof(t_file));
 	if (new_file == NULL)
@@ -59,7 +68,8 @@ t_file *add_file_to_list(t_file **file, char *file_name,
 	}
 	new_file->file_name = ft_strdup(file_name);
 	new_file->file_type = file_type;
-	if(file_type == REDIRECT_INPUT && (strchr(file_name, '\'') || strchr(file_name, '"')))
+	if (file_type == REDIRECT_INPUT && (strchr(file_name, '\'')
+				|| strchr(file_name, '"')))
 		new_file->is_quoted = true;
 	else
 		new_file->is_quoted = false;
@@ -82,12 +92,15 @@ t_file *add_file_to_list(t_file **file, char *file_name,
 	return (*file);
 }
 
-t_command *add_command_to_list(t_command **list_of_commands, char **cmd_chain,
-							   t_file **file)
+t_command	*add_command_to_list(t_command **list_of_commands, char **cmd_chain,
+		t_file **file)
 {
-	t_command *new_command;
-	t_command *current;
+	t_command	*new_command;
+	t_command	*current;
 
+	if (*file == NULL && cmd_chain == NULL)
+		return (NULL);
+	new_command = NULL;
 	new_command = (t_command *)malloc(sizeof(t_command));
 	if (new_command == NULL)
 	{
@@ -108,15 +121,14 @@ t_command *add_command_to_list(t_command **list_of_commands, char **cmd_chain,
 			current = current->next;
 		current->next = new_command;
 	}
-
 	return (*list_of_commands);
 }
 
-t_command *parser_phase(t_lexer *lexer)
+t_command	*parser_phase(t_lexer *lexer)
 {
-	t_command *list_of_commands;
-	t_file *file;
-	char **cmd_chain;
+	t_command	*list_of_commands;
+	t_file		*file;
+	char		**cmd_chain;
 
 	list_of_commands = NULL;
 	file = NULL;
@@ -134,17 +146,21 @@ t_command *parser_phase(t_lexer *lexer)
 		else if (lexer->type == WORD && lexer->prev->type == REDIRECT_INPUT)
 			file = add_file_to_list(&file, lexer->value, REDIRECT_INPUT);
 		else if (lexer->type == WORD)
+		{
 			cmd_chain = add_cmd_chain_to_list(cmd_chain, lexer->value);
+		}
 		else if (lexer->type == PIPE)
 		{
 			list_of_commands = add_command_to_list(&list_of_commands, cmd_chain,
-												   &file);
+					&file);
 			cmd_chain = NULL;
 			file = NULL;
 		}
 		lexer = lexer->next;
 	}
 	list_of_commands = add_command_to_list(&list_of_commands, cmd_chain, &file);
+	if (list_of_commands == NULL)
+		return (NULL);
 	process_command_chain_and_files(list_of_commands);
 	return (list_of_commands);
 }

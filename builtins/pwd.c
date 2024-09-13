@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 14:46:50 by oussama           #+#    #+#             */
-/*   Updated: 2024/08/28 17:12:57 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/06 10:28:00 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,14 @@
 void	pwd(void)
 {
 	char pwd[4096]; // PATH_max
+	
 	if (getcwd(pwd, sizeof(pwd)) != NULL)
 	{
 		printf("%s\n", pwd);
 	}
 	else
 	{
-		perror("getcwd() error");
+		perror("error in PWD");
 		return ;
 	}
 }

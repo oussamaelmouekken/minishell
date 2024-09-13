@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 16:53:43 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/08/29 17:13:17 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:01:52 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+void print(char *str)
+{
+	write(2 ,"exit: ", 6);
+	write(2, str, ft_strlen(str));
+	write(2, ": numeric argument required\n", 28);
+}
 
 int	ft_atoi(char *str)
 {
@@ -33,7 +40,7 @@ int	ft_atoi(char *str)
 	{
 		if (nb > (LONG_MAX - (str[i] - '0')) / 10)
 		{
-			printf("exit: %s: numeric argument required\n", str);
+			print(str);
 			return (2);
 		}
 		nb = nb * 10 + (str[i++] - '0');

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 09:31:05 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/01 18:50:32 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:03:09 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,17 @@
 void	handl_sigint(int sig)
 {
 	(void)sig;
-    printf("\n");
+    write(2, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	g_exit_status = 130;
+	var_globale.g_exit_status = 130;
 }
 
 void	handl_sigint_herdoc(int sig)
 {
 	(void)sig;
-	g_exit_status = 130;
+	var_globale.g_exit_status = 130;
 	exit(130);
 }
 

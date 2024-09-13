@@ -3,234 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/01 20:00:56 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/12 18:54:10 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	exe_builtins(t_command *cmd, t_envp **envp)
-{
-	if (ft_cmp(cmd->command_chain[0], "env") == 0
-		|| (ft_cmp(cmd->command_chain[0], "export") == 0))
-	{
-		afficher_env(cmd, *envp);
-	}
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
-		pwd();
-	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
-		cd(cmd, *envp);
-	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
-		echo_n(cmd);
-	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
-		unset(cmd, envp);
-	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
-		my_exit(cmd);
-	return ;
-}
-void	exe(t_command *cmd, t_envp **envp, char **env)
-{
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0
-			&& cmd->command_chain[1] == NULL) || (ft_cmp(cmd->command_chain[0],
-				"export") == 0))
-		afficher_env(cmd, *envp);
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
-		pwd();
-	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
-		cd(cmd, *envp);
-	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
-		echo_n(cmd);
-	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
-		unset(cmd, envp);
-	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
-		my_exit(cmd);
-	else if ((ft_cmp(cmd->command_chain[0], "env") == 0
-			&& cmd->command_chain[1] != NULL))
-	{
-		printf("env with not arg or options\n");
-		exit(1);
-	}
-	else
-		execute_cmd(cmd, env);
-	exit(0);
-}
-
-char	**Path_env(char **env)
-{
-	int		i;
-	char	*s1;
-	char	**s;
-
-	i = 0;
-	while (env[i])
-	{
-		if (ft_strncmp(env[i], "PATH=", 5) == 0)
-			break ;
-		i++;
-	}
-	s1 = ft_strchr(env[i], '/');
-	s = ft_split(s1, ':');
-	return (s);
-}
-
-char	*true_path(char *cmd, char **env)
-{
-	char	**path;
-	int		i;
-	char	*j;
-	char	*cmd_with_slash;
-
-	path = Path_env(env);
-	i = 0;
-	cmd_with_slash = ft_strjoin("/", cmd);
-	while (path[i])
-	{
-		j = ft_strjoin(path[i], cmd_with_slash);
-		if (access(j, F_OK | X_OK) == 0)
-		{
-			free(cmd_with_slash);
-			free(path);
-			return (j);
-		}
-		i++;
-		free(j);
-	}
-	free(cmd_with_slash);
-	free(path);
-	return (NULL);
-}
-
-void	execute_cmd(t_command *cmd, char **env)
-{
-	char	*path;
-
-	// check relative and absolute path
-	if (access(cmd->command_chain[0], F_OK | X_OK) == 0)
-	{
-		if (execve(cmd->command_chain[0], cmd->command_chain, env) == -1)
-		{
-			perror("execve error");
-			exit(1);
-		}
-	}
-	path = true_path(cmd->command_chain[0], env);
-	if (path == NULL)
-	{
-		perror("command not found");
-		exit(127);
-	}
-	if (execve(path, cmd->command_chain, env) == -1)
-	{
-		perror("execve error");
-		exit(1);
-	}
-}
-
-int	check_file(int fd)
-{
-	if (fd < 0)
-	{
-		perror("open error");
-		return (0);
-	}
-	return (1);
-}
-
-int	infile(t_command *cmd, t_us *var)
-{
-	t_file	*file;
-	int		fd_in;
-
-	fd_in = 0;
-	file = cmd->file;
-	while (file != NULL)
-	{
-		if (file->is_ambiguous == true)
-		{
-			printf("minishell: %s: ambiguous redirect\n", file->file_name);
-			return (-1);
-		}
-		if (file->file_type == REDIRECT_IN)
-		{
-			fd_in = open(file->file_name, O_RDONLY);
-			if (check_file(fd_in) == 0)
-				return (-1);
-		}
-		else if (file->file_type == REDIRECT_INPUT)
-			fd_in = var->fd_herdoc;
-		file = file->next;
-	}
-	return (fd_in);
-}
-
-int	outfile(t_command *cmd)
-{
-	t_file	*file;
-	int		fd_out;
-
-	fd_out = 0;
-	file = cmd->file;
-	while (file != NULL)
-	{
-		if (file->is_ambiguous == true)
-		{
-			printf("minishell: %s: ambiguous redirect\n", file->file_name);
-			return (-1);
-		}
-		if (file->file_type == REDIRECT_OUT)
-		{
-			fd_out = open(file->file_name, O_RDWR | O_CREAT | O_TRUNC, 0664);
-			if (check_file(fd_out) == 0)
-				return (-1);
-		}
-		else if (file->file_type == REDIRECT_APPEND)
-		{
-			fd_out = open(file->file_name, O_RDWR | O_CREAT | O_APPEND, 0664);
-			if (check_file(fd_out) == 0)
-				return (-1);
-		}
-		file = file->next;
-	}
-	return (fd_out);
-}
-
-int	is_builtins(t_command *cmd)
-{
-	if (cmd->command_chain == NULL)
-		return (0);
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0
-			&& cmd->command_chain[1] == NULL) || (ft_cmp(cmd->command_chain[0],
-				"export") == 0))
-	{
-		return (1);
-	}
-	else if (ft_cmp(cmd->command_chain[0], "pwd") == 0)
-		return (1);
-	else if (ft_cmp(cmd->command_chain[0], "cd") == 0)
-		return (1);
-	else if (ft_cmp(cmd->command_chain[0], "echo") == 0)
-		return (1);
-	else if (ft_cmp(cmd->command_chain[0], "unset") == 0)
-		return (1);
-	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
-		return (1);
-	return (0);
-}
-int	nbr_cmd(t_command *cmd)
-{
-	int	i;
-
-	i = 0;
-	while (cmd)
-	{
-		i++;
-		cmd = cmd->next;
-	}
-	return (i);
-}
 void	single_cmd(t_us *var, t_command *cmd, t_envp *envp)
 {
 	int	out;
@@ -257,13 +38,13 @@ void	single_cmd(t_us *var, t_command *cmd, t_envp *envp)
 	close(out);
 }
 
-void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
+void	child(t_command *cmd, t_us *var, t_envp *envp, char **env)
 {
 	signal(SIGQUIT, hanld_siquit);
-	if (i > 0) // not the first cmd
-		dup2(var->fd[i - 1][0], 0);
+	if (var->k > 0) // not the first cmd
+		dup2(var->fd[var->k - 1][0], 0);
 	if (cmd->next != NULL)
-		dup2(var->fd[i][1], 1);
+		dup2(var->fd[var->k][1], 1);
 	close_all(var);
 	var->fd_in = infile(cmd, var);
 	if (var->fd_in > 0)
@@ -278,22 +59,12 @@ void	child(t_command *cmd, t_us *var, t_envp *envp, char **env, int i)
 		close(var->fd_out);
 	}
 	if (var->fd_in < 0 || var->fd_out < 0)
-		exit(1);
+	{
+		exit(1); /// free and cmd
+	}
 	exe(cmd, &envp, env);
 }
-void	perent(t_us *var, t_command *cmd, int i)
-{
-	signal(SIGINT, SIG_IGN);
-	if (i > 0)
-	{
-		close(var->fd[i - 1][0]);
-		// Parent closes the read end of the previous pipe
-	}
-	if (cmd->next != NULL)
-	{
-		close(var->fd[i][1]); // Parent closes the write end of the current pipe
-	}
-}
+
 void	wait_child(t_us *var)
 {
 	int	i;
@@ -301,20 +72,25 @@ void	wait_child(t_us *var)
 	i = 0;
 	while (i < var->nb_cmd)
 	{
-		waitpid(var->pid[i], &g_exit_status, 0);
-		if (WIFEXITED(g_exit_status))
-			g_exit_status = g_exit_status >> 8;
-		if (WIFSIGNALED(g_exit_status))
+		waitpid(var->pid[i], &(var_globale.g_exit_status), 0);
+		if (WIFEXITED(var_globale.g_exit_status))
+			var_globale.g_exit_status = var_globale.g_exit_status >> 8;
+		if (WIFSIGNALED(var_globale.g_exit_status) == 1)
 		{
-			if (g_exit_status == 131) // exit status SIGQUIT in child
-				printf("Quit (core dumped)\n");
-			else /// SIGINT
-				printf("\n");
+			if (var_globale.g_exit_status == 131)
+				write(2, "Quit (core dumped)\n", 19);
+			else if (var_globale.g_exit_status == 2)
+			{
+				var_globale.g_exit_status = 130;
+				write(2, "\n", 1);
+			}
 		}
 		i++;
 	}
 	signal(SIGINT, handl_sigint);
 	close_all(var);
+	free_var(var);
+	// rl_clear_history();
 }
 
 void	close_all(t_us *var)
@@ -331,80 +107,29 @@ void	close_all(t_us *var)
 		i++;
 	}
 }
-void	var_use(t_command *cmd, t_us *var)
-{
-	int	i;
 
-	i = 0;
-	var->k = 0;
-	var->fd_in = 0;
-	var->fd_herdoc = 0;
-	var->fd_out = 1;
-	var->nbr_herdoc = count_herdoc(cmd);
-	var->nb_cmd = nbr_cmd(cmd);
-	if (var->nb_cmd == 1 && is_builtins(cmd) == 0)
-		var->pid = malloc(sizeof(int) * var->nb_cmd);
-	else if (var->nb_cmd > 1)
-	{
-		var->pid = malloc(sizeof(int) * var->nb_cmd);
-		var->fd = malloc(sizeof(int *) * (var->nb_cmd - 1));
-		i = 0;
-		while (i < (var->nb_cmd - 1))
-		{
-			var->fd[i] = malloc(sizeof(int) * 2);
-			pipe(var->fd[i]);
-			i++;
-		}
-	}
-}
-int	var_use_and_herdoc(t_command *cmd, t_us *var, t_envp *env)
-{
-	if (cmd == NULL)
-		return (0);
-	var_use(cmd, var);
-	if (var->nbr_herdoc > 16)
-	{
-		printf("maximum here-document count exceeded\n");
-		return (0);
-	}
-	if (var->nbr_herdoc >= 1)
-	{
-		if (herdoc(cmd, var, env))
-			return (0);
-	}
-	return (1);
-}
-int	var_and_single_built(t_command *cmd, t_us *var, t_envp *envp)
-{
-	if (var_use_and_herdoc(cmd, var, envp) == 0)
-		return (1);
-	if (var->nb_cmd == 1 && is_builtins(cmd))
-	{
-		single_cmd(var, cmd, envp);
-		return (1);
-	}
-	return (0);
-}
 void	execute_command(t_command *cmd, t_envp *envp, char **env)
 {
-	t_us	var;
+	t_us		var;
+	t_command	*tmp;
 
 	if (var_and_single_built(cmd, &var, envp))
 		return ;
 	while (cmd != NULL) // other cmd
 	{
-		if (var.nb_cmd > 1)
-			if (pipe(var.fd[var.k]) == -1 && var.k < var.nb_cmd - 1)
+		if (var.nb_cmd > 1 && var.k < var.nb_cmd - 1)
+			if (pipe(var.fd[var.k]) == -1)
 			{
 				perror("error pipe");
 				return ;
 			}
 		var.pid[var.k] = fork();
 		if (var.pid[var.k] == 0)
-			child(cmd, &var, envp, env, var.k);
+			child(cmd, &var, envp, env);
 		else
-			perent(&var, cmd, var.k);
-		cmd = cmd->next;
+			perent(cmd, &var);
+		tmp = cmd->next;
+		cmd = tmp;
 		var.k++;
 	}
 	wait_child(&var);
