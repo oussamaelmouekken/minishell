@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:23:52 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/16 16:39:28 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/16 18:01:13 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_all_in_perent(t_global var_globale)
 {
 	free_envp(&(var_globale.envp));
 	free_double(var_globale.env_arr);
-	free_var(var_globale.var);
+	//free_var(var_globale.var);
 	rl_clear_history();
 }
 

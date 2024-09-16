@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/16 16:52:10 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/16 18:08:05 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,13 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		}
 		lexer_phase(lexer, input);
 		expansion_phase(lexer, list_envp);
-		// if (syntax_error(*lexer))
-		// {
-		// 	free_list(lexer);
-		// 	free(input);
-		//  var_globale.g_exit_status = 2;
-		// 	continue ;
-		// }
+		if (syntax_error(*lexer))
+		{
+			free_lexer_list(lexer);
+			free(input);
+			var_globale.g_exit_status = 2;
+			continue ;
+		}
 		command = parser_phase(*lexer);
 		if (command == NULL) // ila kant ./minishell bla cmd
 			continue ;
@@ -122,10 +122,10 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		{
 			execute_command(command, list_envp, var_globale.env_arr);
 			// for debugging
-			//show_command(command);
+			// show_command(command);
 		}
 		free_lexer_list(lexer);
-		free_command_list(var_globale.cmd);
+		free_command_list(command);
 		free(input);
 		printf("exit %d\n", var_globale.g_exit_status);
 	}
@@ -180,6 +180,6 @@ int	main(int argc, char **argv, char **envp)
 	var_globale.envp = env;
 	var_globale.env_arr = add_env_arr(env);
 	minishell_process(&lexer, env);
-	//free_all_in_perent(var_globale);
+	free_all_in_perent(var_globale);
 	return (0);
 }

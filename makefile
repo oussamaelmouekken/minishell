@@ -6,7 +6,7 @@ CPARS = parsing/parser_phase.c parsing/ft_split_pro_max.c parsing/expansion_phas
 CLIBFT = libft/ft_itoa.c libft/ft_atoi.c libft/ft_split.c libft/ft_substr.c libft/ft_isdigit.c libft/ft_strlen.c libft/ft_strcmp.c libft/ft_strncmp.c libft/ft_strjoin.c libft/ft_strlcpy.c libft/ft_strlcat.c libft/ft_strchr.c libft/ft_strdup.c  libft/ft_isalnum.c libft/ft_isalpha.c
 OBJ = ${CEXE:.c=.o}
 
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
 
 all: $(NAME)
 
