@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 13:42:24 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/12 16:02:48 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/14 18:40:34 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	**add_env_arr(t_envp *env)
 
 	tmp = env;
 	i = 0;
-	str = malloc(sizeof(char *) * (size_of_list(env) + 1));
+	str = malloc(sizeof(char *) * (var_globale.size_list + 1));
 	if (!str)
 	{
 		printf("Memory allocation failed\n");

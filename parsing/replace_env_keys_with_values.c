@@ -27,57 +27,101 @@ int get_target_dollar(char *str, char *key)
 	return (-1);
 }
 
-char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
+char *get_value_by_key(char *key, t_envp *list_envp)
 {
 	char *value;
-	int i;
-	int k;
-	int j;
-	size_t final_str_len;
-	char *final_str;
-	int len_key;
-	int target_dollar;
 
-	len_key = ft_strlen(key);
-	value = ft_getenv(list_envp, key);
+	value = NULL;
 	if (ft_strcmp(key, "?") == 0)
 		value = ft_itoa(var_globale.g_exit_status);
 	else if (ft_isdigit(key[0]))
 		value = key + 1;
-	else if (value == NULL)
-		value = ft_strdup("");
-	final_str_len = ft_strlen(str) + ft_strlen(value) - len_key + 1;
-	final_str = (char *)malloc(final_str_len * sizeof(char));
+	else if (key[0] == '\'' || key[0] == '"')
+		value = key;
+	else
+	{
+		value = ft_getenv(list_envp, key);
+		if (value == NULL)
+			value = ft_strdup("");
+	}
+	return value;
+}
+
+size_t calculate_final_str_len(char *str, char *value, int len_key)
+{
+	return ft_strlen(str) + ft_strlen(value) - len_key;
+}
+
+char *allocate_final_str(size_t final_str_len)
+{
+	char *final_str;
+
+	final_str = (char *)malloc(final_str_len * sizeof(char) + 1);
 	if (final_str == NULL)
 	{
 		free(final_str);
-		return (NULL);
+		return NULL;
 	}
+	return final_str;
+}
+
+void copy_chars_from_str(char *str, char *final_str, int *i, int *k)
+{
+	final_str[*k] = str[*i];
+	(*i)++;
+	(*k)++;
+}
+
+void copy_value_to_final_str(char *value, char *final_str, int *k)
+{
+	int j;
+
+	j = 0;
+	while (value[j])
+	{
+		final_str[*k] = value[j];
+		(*k)++;
+		j++;
+	}
+}
+
+void replace_key_with_value(char *str, char *final_str, char *value, int len_key, int target_dollar)
+{
+	int i;
+	int k;
+
 	i = 0;
 	k = 0;
-	target_dollar = get_target_dollar(str, key);
 	while (str[i])
 	{
 		if (i != target_dollar)
-		{
-			final_str[k] = str[i];
-			i++;
-			k++;
-		}
+			copy_chars_from_str(str, final_str, &i, &k);
 		else
 		{
-			j = 0;
 			if (value[0] != '\0')
-				while (value[j])
-				{
-					final_str[k] = value[j];
-					k++;
-					j++;
-				}
+				copy_value_to_final_str(value, final_str, &k);
 			i += 1 + len_key;
 		}
 	}
 	final_str[k] = '\0';
+}
+
+char *replace_env_keys_with_values(char *str, char *key, t_envp *list_envp)
+{
+	int len_key;
+	char *final_str;
+	char *value;
+	size_t final_str_len;
+	int target_dollar;
+
+	len_key = ft_strlen(key);
+	value = get_value_by_key(key, list_envp);
+	final_str_len = calculate_final_str_len(str, value, len_key);
+	final_str = allocate_final_str(final_str_len);
+	if (final_str == NULL)
+		return NULL;
+	target_dollar = get_target_dollar(str, key);
+	replace_key_with_value(str, final_str, value, len_key, target_dollar);
 	str = final_str;
-	return (final_str);
+	return final_str;
 }

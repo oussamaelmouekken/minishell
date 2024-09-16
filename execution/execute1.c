@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 18:31:10 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/12 18:38:44 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/15 16:23:36 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,12 @@ void	exe_builtins(t_command *cmd, t_envp **envp)
 		unset(cmd, envp);
 	else if (ft_cmp(cmd->command_chain[0], "exit") == 0)
 		my_exit(cmd);
-	return ;
 }
 void	exe(t_command *cmd, t_envp **envp, char **env)
 {
-	if ((ft_cmp(cmd->command_chain[0], "env") == 0
+	if(cmd->command_chain == NULL)
+		return ;
+	else if ((ft_cmp(cmd->command_chain[0], "env") == 0
 			&& cmd->command_chain[1] != NULL))
 	{
 		write(2, "env: invalid option\n", 20);

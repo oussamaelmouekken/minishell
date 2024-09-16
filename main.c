@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/13 20:02:39 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 16:52:10 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 	t_command	*command;
 
 	command = NULL;
-	var_globale.env = NULL;
 	while (1)
 	{
 		input = readline(G_tty "minishell$ " RESET);
@@ -113,6 +112,7 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		// {
 		// 	free_list(lexer);
 		// 	free(input);
+		//  var_globale.g_exit_status = 2;
 		// 	continue ;
 		// }
 		command = parser_phase(*lexer);
@@ -120,16 +120,14 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 			continue ;
 		else
 		{
-			var_globale.env = add_env_arr(list_envp);
-			execute_command(command, list_envp, var_globale.env);
+			execute_command(command, list_envp, var_globale.env_arr);
 			// for debugging
-			// show_command(command);
-			free_double(var_globale.env);
+			//show_command(command);
 		}
 		free_lexer_list(lexer);
 		free_command_list(var_globale.cmd);
 		free(input);
-		printf("exit %d\n",var_globale.g_exit_status);
+		printf("exit %d\n", var_globale.g_exit_status);
 	}
 }
 
@@ -149,6 +147,7 @@ void	change_shlvl(t_envp **envp)
 			{
 				write(2, "warning: shell level (100) too high\n", 36);
 				nbr_shlvl = 1;
+				var_globale.g_exit_status = 1;
 			}
 			free(tmp->value);
 			v = ft_itoa(nbr_shlvl);
@@ -159,6 +158,7 @@ void	change_shlvl(t_envp **envp)
 		tmp = tmp->next;
 	}
 }
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_lexer	*lexer;
@@ -167,16 +167,19 @@ int	main(int argc, char **argv, char **envp)
 	env = NULL;
 	lexer = NULL;
 	var_globale.g_exit_status = 0;
+	var_globale.env_arr = NULL;
 	signal(SIGINT, handl_sigint);
-	signal(SIGQUIT, SIG_IGN); // ignore in perent process
+	signal(SIGQUIT, SIG_IGN);
 	if (argc != 1 || argv == NULL)
 	{
 		printf("This program does not accept arguments\n");
 		exit(0);
 	}
 	env = add_env(envp);
+	var_globale.size_list = size_of_list(env);
 	var_globale.envp = env;
+	var_globale.env_arr = add_env_arr(env);
 	minishell_process(&lexer, env);
-	// free_all_in_perent(var_globale);
+	//free_all_in_perent(var_globale);
 	return (0);
 }

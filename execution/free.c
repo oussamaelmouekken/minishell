@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 14:23:52 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/13 19:59:32 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 16:39:28 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,36 +15,46 @@
 void	free_all_in_child(t_global *var_globale)
 {
 	free_command_list(var_globale->cmd);
-	free_envp(var_globale->envp);
-	free_double(var_globale->env);
+	free_envp(&var_globale->envp);
+	//free_double(var_globale->env);
 	free_var(var_globale->var);
 	// rl_clear_history();
 }
 
 void	free_all_in_perent(t_global var_globale)
 {
-	free_envp(var_globale.envp);
+	free_envp(&(var_globale.envp));
+	free_double(var_globale.env_arr);
 	free_var(var_globale.var);
 	rl_clear_history();
 }
 
-void	free_envp(t_envp *env)
+void free_envp(t_envp **env)
 {
-	t_envp	*tmp;
-	t_envp	*next;
+    t_envp *tmp;
+    t_envp *next;
 
-	tmp = env;
-	while (tmp)
-	{
-		next = tmp->next;
-		if (tmp->key)
-			free(tmp->key);
-		if (tmp->value)
-			free(tmp->value);
-		free(tmp);
-		tmp = next;
-	}
-	env = NULL;
+    if (!env || !*env)
+        return;
+
+    tmp = *env;
+    while (tmp)
+    {
+        next = tmp->next;
+        if (tmp->key)
+        {
+            free(tmp->key);
+            tmp->key = NULL;
+        }
+        if (tmp->value)
+        {
+            free(tmp->value);
+            tmp->value = NULL;
+        }
+        free(tmp);
+        tmp = next;
+    }
+    *env = NULL;
 }
 
 /////////////////////////
@@ -127,7 +137,14 @@ void	free_var(t_us *var)
 	i = 0;
 	if (!var)
 		return ;
-	if(var->fd == NULL)
+	// if (var->pid == NULL)
+	// 	return ;
+	if (var->pid)
+	{
+		free(var->pid);
+		var->pid = NULL;
+	}
+	if (var->fd == NULL)
 		return ;
 	if (var->fd != NULL)
 	{
@@ -139,10 +156,5 @@ void	free_var(t_us *var)
 		}
 		free(var->fd);
 		var->fd = NULL;
-	}
-	if (var->pid)
-	{
-		free(var->pid);
-		var->pid = NULL;
 	}
 }

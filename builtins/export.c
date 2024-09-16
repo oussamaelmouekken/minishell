@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/11 22:10:53 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/13 19:56:03 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 16:15:30 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int	fct2(char *str, t_envp *env, char *fin)
 		check_egal_and_addegal(n, &env);
 		join_node(n, fin, &env);
 		free(n);
+		//free(first);
 		return (0);
 	}
 	else // node not exist
@@ -50,6 +51,7 @@ int	fct2(char *str, t_envp *env, char *fin)
 		free(n);
 		free(n_and_d);
 		free(fin);
+		//free(first);
 		return (0);
 	}
 	return (1);
@@ -59,7 +61,7 @@ int	fct3(char *first, char *fin, char *new_first, t_envp *env)
 {
 	check_egal_and_addegal(new_first, &env);
 	change_data(new_first, fin, &env);
-	 free_2(first, fin);
+	free(first);
 	return (0);
 }
 
@@ -80,7 +82,10 @@ void	check_cmd(char *str, t_envp *env)
 	else if (check_plus(new_first))
 	{
 		if (fct2(str, env, fin) == 0)
+		{
+			free(first);
 			return ;
+		}
 	}
 	else if (check_exist_node_with_ncmp(new_first, env) && if_egal(new_first))
 	{
@@ -93,7 +98,7 @@ void	check_cmd(char *str, t_envp *env)
 			return ;
 	}
 	ft_add_value_env(str, &env);
-	 free_2(first, fin);
+	free_2(first, fin);
 }
 
 void	export(t_command *cmd, t_envp **env)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/13 19:36:32 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 16:24:44 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,9 @@ typedef struct command
 typedef struct for_free
 {
 	int				g_exit_status;
-	int				kkk;
-	char			**env;
+	int				size_list;
+	int export_encountered;
+	char			**env_arr;
 	t_command		*cmd;
 	t_envp			*envp;
 	t_us			*var;
@@ -96,6 +97,7 @@ typedef struct for_free
 extern t_global		var_globale;
 
 // execution part
+int					size_of_list(t_envp *env);
 char				*check_to_egal(char *first);
 char				*delet_plus(char *str);
 void				join_node(char *str, char *data_fin, t_envp **env);
@@ -119,7 +121,7 @@ void				perent(t_command *cmd, t_us *var);
 int					var_and_single_built(t_command *cmd, t_us *var,
 						t_envp *envp);
 int					nbr_cmd(t_command *cmd);
-void				free_envp(t_envp *env);
+void				free_envp(t_envp **env);
 void				free_all_in_perent(t_global var_globale);
 void				free_all_in_child(t_global *var_globale);
 void				free_var(t_us *var);

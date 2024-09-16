@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 18:49:55 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/13 18:50:32 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/15 12:30:00 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ char	*check_to_egal(char *first)
 		write(2, "export: ", 8);
 		write(2, first, ft_strlen(first));
 		write(2, ": not a valid identifier\n", 26);
+		var_globale.g_exit_status = 1;
 		return (NULL);
 	}
 	else if (check_plus(first))

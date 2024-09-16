@@ -6,43 +6,46 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 14:17:41 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/12 16:19:50 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/14 22:43:27 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	unset(t_command *cmd, t_envp **env)
+void	remove_var(t_envp **envp, char *var_name)
 {
-	int i = 1;
-	while (cmd->command_chain[i])
-	{
-		char *target = ft_strjoin(cmd->command_chain[i], "=");
-		if (!target)
-		{
-			printf("error\n");
-			exit(0);
-		}
-		t_envp *tmp = *env;
-		t_envp *prev = NULL;
-		while (tmp != NULL)
-		{
-			if (ft_cmp(target, tmp->key) == 0)
-			{
-				if (prev == NULL)
-					*env = tmp->next;
-				else
-					prev->next = tmp->next;
+	t_envp	*new;
+	t_envp	*tmp;
 
-				free(tmp->value);
-				free(tmp->key);
-				free(tmp);
-				break;
-			}
-			prev = tmp;
-			tmp = tmp->next;
+	new = *envp;
+	tmp = NULL;
+	while (new)
+	{
+		if (!ft_strcmp(var_name, new->key))
+		{
+			if (tmp)
+				tmp->next = new->next;
+			free(new->key);
+			if (new->value)
+				free(new->value);
+			if (!tmp)
+				*envp = (*envp)->next;
+			free(new);
+			return ;
 		}
-		free(target);
-		i++;
+		tmp = new;
+		new = new->next;
 	}
 }
+void unset(t_command *cmd, t_envp **env)
+{
+    int i;
+
+    i = 1;
+    while (cmd->command_chain[i])
+    {
+        remove_var(env, cmd->command_chain[i]);
+        i++;
+    }
+}
+

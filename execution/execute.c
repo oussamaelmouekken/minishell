@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/12 18:54:10 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/15 16:24:28 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,27 +59,27 @@ void	child(t_command *cmd, t_us *var, t_envp *envp, char **env)
 		close(var->fd_out);
 	}
 	if (var->fd_in < 0 || var->fd_out < 0)
-	{
-		exit(1); /// free and cmd
-	}
+		exit(1);
 	exe(cmd, &envp, env);
 }
 
 void	wait_child(t_us *var)
 {
 	int	i;
+	int	status;
 
+	status = 0;
 	i = 0;
 	while (i < var->nb_cmd)
 	{
-		waitpid(var->pid[i], &(var_globale.g_exit_status), 0);
-		if (WIFEXITED(var_globale.g_exit_status))
-			var_globale.g_exit_status = var_globale.g_exit_status >> 8;
-		if (WIFSIGNALED(var_globale.g_exit_status) == 1)
+		waitpid(var->pid[i], &(status), 0);
+		if (WIFEXITED(status))
+			var_globale.g_exit_status = WEXITSTATUS(status);
+		if (WIFSIGNALED(status) == 1)
 		{
-			if (var_globale.g_exit_status == 131)
+			if (status == 131)
 				write(2, "Quit (core dumped)\n", 19);
-			else if (var_globale.g_exit_status == 2)
+			else if (status == 2)
 			{
 				var_globale.g_exit_status = 130;
 				write(2, "\n", 1);
@@ -90,7 +90,6 @@ void	wait_child(t_us *var)
 	signal(SIGINT, handl_sigint);
 	close_all(var);
 	free_var(var);
-	// rl_clear_history();
 }
 
 void	close_all(t_us *var)

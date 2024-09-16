@@ -10,7 +10,8 @@ t_envp	*create_envp_node(char *line_envp)
 	if (!new_node)
 		return (NULL);
 	key = ft_substr(line_envp, 0, strlen_to_char(line_envp, '='));
-	value = ft_substr(line_envp, ft_strlen(key) + 1, ft_strlen(line_envp + ft_strlen(key) + 1));
+	value = ft_substr(line_envp, ft_strlen(key) + 1, ft_strlen(line_envp
+				+ ft_strlen(key) + 1));
 	if (!key || !value)
 	{
 		free(new_node);
@@ -70,8 +71,6 @@ t_envp	*create_environment_node(char **envp)
 	}
 	return (list);
 }
-
-
 
 int	is_alnum_or_underscore(char c)
 {

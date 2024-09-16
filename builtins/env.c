@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/13 20:26:20 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 15:55:43 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ char	*ft_getenv(t_envp *env, char *key)
 	current = env;
 	while (current != NULL)
 	{
-		
 		if (ft_strcmp(current->key, key) == 0)
 			return (current->value);
 		current = current->next;
@@ -58,8 +57,9 @@ char	*to_egal(char *str)
 {
 	int		i;
 	int		j;
-	char	*s = NULL;
+	char	*s;
 
+	s = NULL;
 	j = 0;
 	i = 0;
 	while (str[i] && str[i] != '=')
@@ -133,7 +133,7 @@ void	env_egal_null(t_envp **env)
 		return ;
 	}
 	ft_add_value_env("SHLVL=1", env);
-	ft_add_value_env("_=/usr/bin/env",env);
+	ft_add_value_env("_=/usr/bin/env", env);
 }
 t_envp	*add_env(char **env)
 {
@@ -164,12 +164,12 @@ t_envp	*add_env(char **env)
 	change_shlvl(&envp);
 	return (envp);
 }
+
 void	afficher_env(t_command *cmd, t_envp *env)
 {
 	t_envp	*tmp;
+
 	tmp = env;
-	tmp->egal_exist = false;
-	tmp->env_path = false;
 	if (ft_strcmp(cmd->command_chain[0], "export") == 0)
 	{
 		if (cmd->command_chain[1] != NULL)

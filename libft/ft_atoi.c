@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 16:53:43 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/12 16:01:52 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/15 17:05:02 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int	ft_atoi(char *str)
 			sign *= -1;
 		i++;
 	}
+	//printf("%d\n",sign);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		if (nb > (LONG_MAX - (str[i] - '0')) / 10)

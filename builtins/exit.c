@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:44:45 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/12 17:20:47 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 14:16:06 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	util(t_command *cmd)
 	int	new_exit;
 
 	new_exit = 0;
-	if(var_globale.var->nb_cmd == 1)
+	if (var_globale.var->nb_cmd == 1)
 		write(2, "exit\n", 5);
 	new_exit = ft_atoi(cmd->command_chain[1]);
 	return (new_exit);
@@ -59,7 +59,7 @@ void	my_exit(t_command *cmd)
 		i = 0;
 		while (cmd->command_chain[1][i] != '\0')
 		{
-			if (!ft_isdigit(cmd->command_chain[1][i]))
+			if (!ft_isdigit(cmd->command_chain[1][1]) && cmd->command_chain[1][0] != '-')
 			{
 				is_numeric = 0;
 				break ;

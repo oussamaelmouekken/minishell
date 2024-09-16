@@ -6,7 +6,7 @@
 /*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 14:49:09 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/12 18:48:49 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/14 21:13:22 by oussama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	change_old_new_pwd(t_envp *env, char newpwd[4096], char oldpwd[4096])
 	{
 		if (ft_strncmp(tmp->key, "OLDPWD=", 7) == 0)
 		{
+			free(tmp->value);
 			tmp->value = ft_strdup(oldpwd);
 			if (tmp->value == NULL)
 			{
@@ -30,6 +31,7 @@ void	change_old_new_pwd(t_envp *env, char newpwd[4096], char oldpwd[4096])
 		}
 		if (ft_strncmp(tmp->key, "PWD=", 4) == 0)
 		{
+			free(tmp->value);
 			tmp->value = ft_strdup(newpwd);
 			if (tmp->value == NULL)
 			{
@@ -64,6 +66,7 @@ char	*ft_setenv(char *variable, t_envp *env)
 	}
 	return (NULL);
 }
+
 void	cd(t_command *cmd, t_envp *env)
 {
 	char	*oldpwd;
@@ -86,15 +89,20 @@ void	cd(t_command *cmd, t_envp *env)
 	oldpwd = ft_setenv("PWD", env);
 	if (chdir(path) == -1)
 	{
+		free(path);
+		free(oldpwd);
 		perror("error chdir()");
 		var_globale.g_exit_status = 1;
 		return ;
 	}
+	free(path);
 	if (getcwd(newpwd, 4096) == NULL)
 	{
+		free(oldpwd);
 		perror("error cd PWD");
 		var_globale.g_exit_status = 1;
 		return ;
 	}
 	change_old_new_pwd(env, newpwd, oldpwd);
+	free(oldpwd);
 }

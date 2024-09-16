@@ -1,51 +1,80 @@
 #include "../minishell.h"
 
+int print_error(t_lexer **lexer, char *str, char *str1)
+{
+	if (str1 && ft_strlen(str1) > 1)
+		printf("%s`%c%c'\n", str, str1[0], str1[1]);
+	else if (str1)
+		printf("%s`%c'\n", str, str1[0]);
+	else
+		printf("%s\n", str);
+	// free(*lex);
+	*lexer = NULL;
+	return (0);
+}
+
+int is_lexer_null(t_lexer **lexer)
+{
+	return !(*lexer);
+}
+
+int is_initial_pipe(t_lexer **lexer)
+{
+	return (*lexer)->type == PIPE;
+}
+
+int process_lexer(t_lexer **lexer)
+{
+	while ((*lexer)->next)
+	{
+		if ((*lexer)->type != WORD && (*lexer)->type != REDIRECT_INPUT && (*lexer)->type != REDIRECT_APPEND)
+		{
+			if (ft_strlen((*lexer)->value) > 1)
+				return 1;
+		}
+		(*lexer) = (*lexer)->next;
+		if ((*lexer)->type == PIPE && ((*lexer)->prev == NULL || (*lexer)->prev->type != WORD))
+			return 1;
+		if ((*lexer)->type != WORD && (*lexer)->prev->type != WORD && (*lexer)->prev->type != PIPE)
+			return 1;
+	}
+	return 0;
+}
+
+int final_checks(t_lexer **lexer)
+{
+	if ((*lexer)->type != WORD && ft_strlen((*lexer)->value) >= 2)
+		return 1;
+	else if ((*lexer)->type == PIPE)
+		return 1;
+	else if ((*lexer)->type != WORD)
+		return 1;
+	return 0;
+}
+
+int check_syntax_error(t_lexer **lexer)
+{
+	if (is_lexer_null(lexer))
+		return 0;
+	if (is_initial_pipe(lexer))
+		return 1;
+	if (process_lexer(lexer))
+		return 1;
+	return final_checks(lexer);
+}
+
 int syntax_error(t_lexer *lexer)
 {
-	t_lexer *current = lexer;
-	while (current)
+	int n;
+	t_lexer *new;
+
+	new = lexer;
+	n = check_syntax_error(&new);
+	if (n != 0)
 	{
-		if (current->type == PIPE)
-		{
-			if (current->next == NULL || current->next->type != WORD)
-			{
-				printf("bash: syntax error near unexpected token `newline' pipe at the end or (pipe followed sepecial char.)\n");
-				return (1);
-			}
-		}
-		else if (current->type == REDIRECT_OUT)
-		{
-			if (current->next == NULL || current->next->type != WORD)
-			{
-				printf("bash: syntax error near unexpected token `newline' redirect out at the end or (redirect out followed sepecial char.)\n");
-				return (1);
-			}
-		}
-		else if (current->type == REDIRECT_IN)
-		{
-			if (current->next == NULL || current->next->type != WORD)
-			{
-				printf("bash: syntax error near unexpected token `newline' redirect in at the end or (redirect in followed sepecial char.)\n");
-				return (1);
-			}
-		}
-		else if (current->type == REDIRECT_APPEND)
-		{
-			if (current->next == NULL || current->next->type != WORD)
-			{
-				printf("bash: syntax error near unexpected token `newline' redirect append at the end or (redirect append followed sepecial char.)\n");
-				return (1);
-			}
-		}
-		else if (current->type == REDIRECT_INPUT)
-		{
-			if (current->next == NULL || current->next->type != WORD)
-			{
-				printf("bash: syntax error near unexpected token `newline' redirect input at the end or (redirect input followed sepecial char.)\n");
-				return (1);
-			}
-		}
-		current = current->next;
+		if (n == 1)
+			print_error(&lexer, "minshell :syntax error near unexpected token", new->value);
+		return (1);
 	}
 	return (0);
 }

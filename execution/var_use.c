@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   var_use.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 18:52:13 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/13 20:16:34 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/16 16:43:51 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,16 @@ int	var_and_single_built(t_command *cmd, t_us *var, t_envp *envp)
 	if (var->nb_cmd == 1 && is_builtins(cmd) == 1)
 	{
 		single_cmd(var, cmd, envp);
+		return (1);
+	}
+	if (cmd->command_chain == NULL && var->nb_cmd == 1)
+	{
+		var->fd_in = infile(cmd, var);
+		var->fd_out = outfile(cmd);
+		if (var->fd_in < 0 || var->fd_out < 0)
+		{
+			return 1; /// free and cmd
+		}
 		return (1);
 	}
 	return (0);
