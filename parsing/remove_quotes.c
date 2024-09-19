@@ -5,10 +5,10 @@ void remove_quotes(char **str)
 	int i = 0;
 	int j = 0;
 	char current_quote;
-	char *new_str = (char *)malloc(strlen(*str) + 1);
+	char *new_str = (char *)gc_malloc(strlen(*str) + 1);
 	if (new_str == NULL)
 	{
-		free(new_str);
+		gc_remove_ptr(new_str);
 		return;
 	}
 
@@ -27,7 +27,7 @@ void remove_quotes(char **str)
 			new_str[j++] = (*str)[i++];
 	}
 	new_str[j] = '\0';
-	free(*str);
+	gc_remove_ptr(*str);
 	*str = new_str;
 }
 

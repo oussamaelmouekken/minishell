@@ -3,46 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   export1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 18:48:54 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/13 18:49:29 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/18 12:12:06 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
+
+void	swap_node(t_envp *node1, t_envp *node2)
+{
+	char	*new_data;
+	char	*new_name;
+
+	new_name = node2->key;
+	node2->key = node1->key;
+	node1->key = new_name;
+	new_data = node2->value;
+	node2->value = node1->value;
+	node1->value = new_data;
+}
 
 void	sort_list(t_envp **env)
 {
 	t_envp	*tmp;
-	int		is_swaped;
-	char	*new_data;
-	char	*new_name;
+	int		is_swapped;
 
 	if (*env == NULL)
 		return ;
-	new_data = NULL;
-	new_name = NULL;
-	do
+	is_swapped = 1;
+	while (is_swapped)
 	{
-		is_swaped = 0;
+		is_swapped = 0;
 		tmp = *env;
 		while (tmp->next != NULL)
 		{
 			if (ft_cmp(tmp->key, tmp->next->key) > 0)
 			{
-				new_name = tmp->next->key;
-				tmp->next->key = tmp->key;
-				tmp->key = new_name;
-				new_data = tmp->next->value;
-				tmp->next->value = tmp->value;
-				tmp->value = new_data;
-				is_swaped = 1;
+				swap_node(tmp, tmp->next);
+				is_swapped = 1;
 			}
 			tmp = tmp->next;
 		}
-	} while (is_swaped); // while true
+	}
 }
+
 int	check_if_egal_exit(char *str)
 {
 	int	i;
@@ -56,6 +62,7 @@ int	check_if_egal_exit(char *str)
 	}
 	return (0);
 }
+
 void	check_egal(t_envp **env)
 {
 	t_envp	*tmp;
@@ -73,21 +80,6 @@ void	check_egal(t_envp **env)
 		}
 		tmp = tmp->next;
 	}
-}
-int	ft_cmp(char *s1, char *s2)
-{
-	int	i;
-
-	i = 0;
-	while (s1[i] && s2[i])
-	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		i++;
-	}
-	if (s1[i] == '=' || s2[i] == '=')
-		return (0);
-	return (s1[i] - s2[i]);
 }
 
 int	check_plus(char *str)

@@ -6,15 +6,16 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 17:06:24 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/03 19:15:10 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/18 11:50:00 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../minishell.h"
 #include "libft.h"
 
-char	*ft_substr(char  *s, int start, int len)
+char	*ft_substr(char *s, int start, int len)
 {
-	int	i;
+	int		i;
 	char	*p;
 	char	*ss;
 
@@ -26,7 +27,7 @@ char	*ft_substr(char  *s, int start, int len)
 	{
 		len = ft_strlen(s) - start;
 	}
-	p = malloc((len + 1)); // i9dr iw93 double free  fsplit ila khdmt bmalloc dyali
+	p = gc_malloc((len + 1));
 	ss = (char *)s;
 	if (!p)
 		return (NULL);

@@ -10,9 +10,9 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 
 	cout_words = 0;
 	i = 0;
-	if (var_globale.export_encountered == 1)
+	if (g_var_globale.export_encountered == 1)
 	{
-		tmp = malloc(sizeof(char *) * 2);
+		tmp = gc_malloc(sizeof(char *) * 2);
 		tmp[0] = ft_strdup(cmd);
 		tmp[1] = NULL;
 	}
@@ -23,7 +23,7 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 		cout_words++;
 	if (cmd_chain == NULL)
 	{
-		new_cmd_chain = (char **)malloc(sizeof(char *) * (cout_words + 1));
+		new_cmd_chain = (char **)gc_malloc(sizeof(char *) * (cout_words + 1));
 		while (i < cout_words)
 		{
 			new_cmd_chain[i] = ft_strdup(tmp[i]);
@@ -35,7 +35,7 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 	{
 		while (cmd_chain[i] != NULL)
 			i++;
-		new_cmd_chain = (char **)malloc(sizeof(char *) * (i + cout_words + 1));
+		new_cmd_chain = (char **)gc_malloc(sizeof(char *) * (i + cout_words + 1));
 		i = 0;
 		j = 0;
 		while (cmd_chain[i] != NULL)
@@ -56,12 +56,12 @@ char **add_cmd_chain_to_list(char **cmd_chain, char *cmd)
 }
 
 t_file *add_file_to_list(t_file **file, char *file_name,
-						 enum token_type file_type)
+						 enum e_token_type file_type)
 {
 	t_file *new_file;
 	t_file *current;
 
-	new_file = (t_file *)malloc(sizeof(t_file));
+	new_file = (t_file *)gc_malloc(sizeof(t_file));
 	if (new_file == NULL)
 	{
 		perror("Failed to allocate memory");
@@ -69,7 +69,7 @@ t_file *add_file_to_list(t_file **file, char *file_name,
 	}
 
 	if (file_type != REDIRECT_INPUT)
-		file_name = expansion(file_name, var_globale.envp);
+		file_name = expansion(file_name, g_var_globale.envp);
 
 	new_file->file_name = ft_strdup(file_name);
 	new_file->file_type = file_type;
@@ -103,7 +103,7 @@ t_command *add_command_to_list(t_command **list_of_commands, char **cmd_chain, t
 	t_command *new_command;
 	t_command *current;
 
-	new_command = (t_command *)malloc(sizeof(t_command));
+	new_command = (t_command *)gc_malloc(sizeof(t_command));
 	if (new_command == NULL)
 	{
 		perror("Failed to allocate memory");

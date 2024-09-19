@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 14:17:41 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/14 22:43:27 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/18 11:55:19 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,27 +25,27 @@ void	remove_var(t_envp **envp, char *var_name)
 		{
 			if (tmp)
 				tmp->next = new->next;
-			free(new->key);
+			gc_remove_ptr(new->key);
 			if (new->value)
-				free(new->value);
+				gc_remove_ptr(new->value);
 			if (!tmp)
 				*envp = (*envp)->next;
-			free(new);
+			gc_remove_ptr(new);
 			return ;
 		}
 		tmp = new;
 		new = new->next;
 	}
 }
-void unset(t_command *cmd, t_envp **env)
+
+void	unset(t_command *cmd, t_envp **env)
 {
-    int i;
+	int	i;
 
-    i = 1;
-    while (cmd->command_chain[i])
-    {
-        remove_var(env, cmd->command_chain[i]);
-        i++;
-    }
+	i = 1;
+	while (cmd->command_chain[i])
+	{
+		remove_var(env, cmd->command_chain[i]);
+		i++;
+	}
 }
-

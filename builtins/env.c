@@ -6,80 +6,11 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 20:47:46 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/16 15:55:43 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/18 19:26:20 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-char	*ft_getenv(t_envp *env, char *key)
-{
-	t_envp	*current;
-
-	current = env;
-	while (current != NULL)
-	{
-		if (ft_strcmp(current->key, key) == 0)
-			return (current->value);
-		current = current->next;
-	}
-	return (NULL);
-}
-
-char	*to_fin(char *str)
-{
-	int		i;
-	int		j;
-	char	*s;
-	int		c;
-
-	i = 0;
-	while (str[i] && str[i] != '=')
-		i++;
-	if (str[i] == '=')
-		i++;
-	c = ft_strlen(str) - i;
-	s = malloc(sizeof(char) * (c + 1));
-	if (!s)
-	{
-		printf("error malloc\n");
-		return (NULL);
-	}
-	j = 0;
-	while (i < ft_strlen(str))
-	{
-		s[j++] = str[i++];
-	}
-	s[j] = '\0';
-	return (s);
-}
-char	*to_egal(char *str)
-{
-	int		i;
-	int		j;
-	char	*s;
-
-	s = NULL;
-	j = 0;
-	i = 0;
-	while (str[i] && str[i] != '=')
-		i++;
-	i++;
-	s = malloc(sizeof(char) * (i + 1));
-	if (!s)
-	{
-		printf("error malloc\n");
-		return (NULL);
-	}
-	j = 0;
-	while (j < i)
-	{
-		s[j] = str[j];
-		j++;
-	}
-	s[j] = '\0';
-	return (s);
-}
 
 void	ft_add_value_env(char *node, t_envp **env)
 {
@@ -93,14 +24,10 @@ void	ft_add_value_env(char *node, t_envp **env)
 	tmp = *env;
 	while (tmp && tmp->next)
 		tmp = tmp->next;
-	new_node = (t_envp *)malloc(sizeof(t_envp));
-	if (new_node == NULL)
-	{
-		printf("Error: Memory allocation failed\n");
+	new_node = (t_envp *)gc_malloc(sizeof(t_envp));
+	if (erro_malloc(new_node))
 		return ;
-	}
-	new_node->env_path = false;
-	new_node->egal_exist = false;
+	init_(new_node);
 	if (check_if_egal_exit(node) == 0)
 		new_node->egal_exist = true;
 	new_node->key = to_egal(node);
@@ -113,19 +40,21 @@ void	ft_add_value_env(char *node, t_envp **env)
 	else
 		*env = new_node;
 }
+
 void	env_egal_null(t_envp **env)
 {
 	char	*v1;
 	char	*p;
+	char	pwd[4096];
 
-	v1 = "PATH=/nfs/homes/oel-moue/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin";
+	v1 = "PATH=/nfs/homes/oel-moue/bin:/usr/local/sbin:/usr/local/bin:"
+		"/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin";
 	ft_add_value_env(v1, env);
-	char pwd[4096]; // PATH_max 4096
 	if (getcwd(pwd, sizeof(pwd)) != NULL)
 	{
 		p = ft_strjoin("PWD=", pwd);
 		ft_add_value_env(p, env);
-		free(p);
+		gc_remove_ptr(p);
 	}
 	else
 	{
@@ -135,6 +64,7 @@ void	env_egal_null(t_envp **env)
 	ft_add_value_env("SHLVL=1", env);
 	ft_add_value_env("_=/usr/bin/env", env);
 }
+
 t_envp	*add_env(char **env)
 {
 	t_envp	*envp;
@@ -145,10 +75,10 @@ t_envp	*add_env(char **env)
 	else
 	{
 		i = 0;
-		envp = (t_envp *)malloc(sizeof(t_envp));
+		envp = (t_envp *)gc_malloc(sizeof(t_envp));
 		if (envp == NULL)
 		{
-			printf("Error: malloc \n");
+			printf("Error: gc_malloc \n");
 			return (NULL);
 		}
 		envp->key = to_egal(env[i]);
@@ -157,12 +87,28 @@ t_envp	*add_env(char **env)
 		i++;
 		while (env[i] != NULL)
 		{
-			ft_add_value_env(env[i], &envp);
-			i++;
+			ft_add_value_env(env[i++], &envp);
 		}
 	}
 	change_shlvl(&envp);
 	return (envp);
+}
+
+void	print_env_variable(t_envp *tmp, t_command *cmd)
+{
+	if (ft_strcmp(cmd->command_chain[0], "export") == 0
+		&& cmd->command_chain[1] == NULL)
+	{
+		if (tmp->egal_exist == false)
+			printf("declare -x %s\"%s\"\n", tmp->key, tmp->value);
+		else
+			printf("declare -x %s%s\n", tmp->key, tmp->value);
+	}
+	else
+	{
+		if (tmp->egal_exist == false)
+			printf("%s%s\n", tmp->key, tmp->value);
+	}
 }
 
 void	afficher_env(t_command *cmd, t_envp *env)
@@ -170,13 +116,11 @@ void	afficher_env(t_command *cmd, t_envp *env)
 	t_envp	*tmp;
 
 	tmp = env;
-	if (ft_strcmp(cmd->command_chain[0], "export") == 0)
+	if (ft_strcmp(cmd->command_chain[0], "export") == 0
+		&& cmd->command_chain[1] != NULL)
 	{
-		if (cmd->command_chain[1] != NULL)
-		{
-			export(cmd, &env);
-			return ;
-		}
+		export(cmd, &env);
+		return ;
 	}
 	while (tmp != NULL)
 	{
@@ -187,16 +131,8 @@ void	afficher_env(t_command *cmd, t_envp *env)
 			{
 				sort_list(&env);
 				check_egal(&env);
-				if (tmp->egal_exist == false)
-					printf("declare -x %s\"%s\"\n", tmp->key, tmp->value);
-				else if (tmp->egal_exist == true)
-					printf("declare -x %s%s\n", tmp->key, tmp->value);
 			}
-			else
-			{
-				if (tmp->egal_exist == false)
-					printf("%s%s\n", tmp->key, tmp->value);
-			}
+			print_env_variable(tmp, cmd);
 		}
 		tmp = tmp->next;
 	}

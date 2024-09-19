@@ -6,7 +6,7 @@ t_envp	*create_envp_node(char *line_envp)
 	char	*key;
 	char	*value;
 
-	new_node = (t_envp *)malloc(sizeof(t_envp));
+	new_node = (t_envp *)gc_malloc(sizeof(t_envp));
 	if (!new_node)
 		return (NULL);
 	key = ft_substr(line_envp, 0, strlen_to_char(line_envp, '='));
@@ -14,7 +14,7 @@ t_envp	*create_envp_node(char *line_envp)
 				+ ft_strlen(key) + 1));
 	if (!key || !value)
 	{
-		free(new_node);
+		gc_remove_ptr(new_node);
 		return (NULL);
 	}
 	new_node->key = key;
@@ -50,8 +50,8 @@ void	free_lexer_list(t_lexer **lexer)
 	while (current != NULL)
 	{
 		next = current->next;
-		free(current->value);
-		free(current);
+		gc_remove_ptr(current->value);
+		gc_remove_ptr(current);
 		current = next;
 	}
 	*lexer = NULL;
@@ -77,18 +77,18 @@ int	is_alnum_or_underscore(char c)
 	return (ft_isalnum(c) || c == '_');
 }
 
-t_lexer	*create_lexer_node(char *value, enum token_type type)
+t_lexer	*create_lexer_node(char *value, enum e_token_type type)
 {
 	t_lexer	*new_node;
 
-	new_node = (t_lexer *)malloc(sizeof(t_lexer));
+	new_node = (t_lexer *)gc_malloc(sizeof(t_lexer));
 	if (!new_node)
 		return (NULL);
 	new_node->prev = NULL;
 	new_node->value = ft_strdup(value);
 	new_node->type = type;
 	new_node->next = NULL;
-	free(value);
+	gc_remove_ptr(value);
 	return (new_node);
 }
 

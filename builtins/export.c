@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/11 22:10:53 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/16 16:15:30 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/18 12:11:23 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ void	fct1(char *first, char *str, char *fin)
 	write(2, "export: ", 8);
 	write(2, str, ft_strlen(str));
 	write(2, "not a valid identifier\n", 24);
-	var_globale.g_exit_status = 1;
+	g_var_globale.g_exit_status = 1;
 	return ;
 }
+
 int	fct2(char *str, t_envp *env, char *fin)
 {
 	char	*first;
 	char	*new_first;
 	char	*n;
-	char	*n_and_d;
 
 	first = to_egal(str);
 	new_first = check_to_egal(first);
@@ -36,22 +36,14 @@ int	fct2(char *str, t_envp *env, char *fin)
 		fct1(first, str, fin);
 		return (0);
 	}
-	if (check_exist_node_with_ncmp(n, env)) // node exit
+	if (check_exist_node_with_ncmp(n, env))
 	{
-		check_egal_and_addegal(n, &env);
-		join_node(n, fin, &env);
-		free(n);
-		//free(first);
+		join(n, env, fin);
 		return (0);
 	}
-	else // node not exist
+	else
 	{
-		n_and_d = ft_strjoin(n, fin);
-		ft_add_value_env(n_and_d, &env);
-		free(n);
-		free(n_and_d);
-		free(fin);
-		//free(first);
+		add_v(n, fin, env);
 		return (0);
 	}
 	return (1);
@@ -61,7 +53,7 @@ int	fct3(char *first, char *fin, char *new_first, t_envp *env)
 {
 	check_egal_and_addegal(new_first, &env);
 	change_data(new_first, fin, &env);
-	free(first);
+	gc_remove_ptr(first);
 	return (0);
 }
 
@@ -81,20 +73,12 @@ void	check_cmd(char *str, t_envp *env)
 	}
 	else if (check_plus(new_first))
 	{
-		if (fct2(str, env, fin) == 0)
-		{
-			free(first);
+		if (handle_check_plus(str, env, first, fin))
 			return ;
-		}
-	}
-	else if (check_exist_node_with_ncmp(new_first, env) && if_egal(new_first))
-	{
-		free_2(first, fin);
-		return ;
 	}
 	else if (check_exist_node_with_ncmp(new_first, env))
 	{
-		if (fct3(first, fin, new_first, env) == 0)
+		if (check_exist_node(new_first, env, first, fin))
 			return ;
 	}
 	ft_add_value_env(str, &env);

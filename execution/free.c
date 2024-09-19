@@ -5,76 +5,52 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/03 14:23:52 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/16 18:01:13 by oel-moue         ###   ########.fr       */
+/*   Created: 2024/09/17 15:14:28 by oel-moue          #+#    #+#             */
+/*   Updated: 2024/09/19 14:29:17 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	free_all_in_child(t_global *var_globale)
+int	count_herdoc(t_command *cmd)
 {
-	free_command_list(var_globale->cmd);
-	free_envp(&var_globale->envp);
-	//free_double(var_globale->env);
-	free_var(var_globale->var);
-	// rl_clear_history();
+	t_file	*f;
+	int		i;
+
+	i = 0;
+	while (cmd)
+	{
+		f = cmd->file;
+		while (f != NULL)
+		{
+			if (f->file_type == REDIRECT_INPUT)
+				i++;
+			f = f->next;
+		}
+		cmd = cmd->next;
+	}
+	return (i);
 }
 
-void	free_all_in_perent(t_global var_globale)
+void	write_ambiguous(t_file *file)
 {
-	free_envp(&(var_globale.envp));
-	free_double(var_globale.env_arr);
-	//free_var(var_globale.var);
-	rl_clear_history();
+	write(2, "minishell: ", 11);
+	write(2, file->file_name, ft_strlen(file->file_name));
+	write(2, ": ambiguous redirect\n", 21);
+	g_var_globale.g_exit_status = 1;
 }
 
-void free_envp(t_envp **env)
-{
-    t_envp *tmp;
-    t_envp *next;
-
-    if (!env || !*env)
-        return;
-
-    tmp = *env;
-    while (tmp)
-    {
-        next = tmp->next;
-        if (tmp->key)
-        {
-            free(tmp->key);
-            tmp->key = NULL;
-        }
-        if (tmp->value)
-        {
-            free(tmp->value);
-            tmp->value = NULL;
-        }
-        free(tmp);
-        tmp = next;
-    }
-    *env = NULL;
-}
-
-/////////////////////////
-
-void	free_command(t_command *cmd)
+void	free_double(char **str)
 {
 	int	i;
 
 	i = 0;
-	while (cmd->command_chain[i] != NULL)
+	while (str[i])
 	{
-		free(cmd->command_chain[i]);
+		gc_remove_ptr(str[i]);
 		i++;
 	}
-	free(cmd->command_chain);
-	if (cmd->file != NULL)
-	{
-		free_file_list(cmd->file);
-	}
-	free(cmd);
+	gc_remove_ptr(str);
 }
 
 void	free_file_list(t_file *file)
@@ -85,8 +61,8 @@ void	free_file_list(t_file *file)
 	{
 		tmp = file;
 		file = file->next;
-		free(tmp->file_name); // Free the file name string
-		free(tmp);            // Free the t_file structure node
+		gc_remove_ptr(tmp->file_name);
+		gc_remove_ptr(tmp);
 	}
 }
 
@@ -103,58 +79,16 @@ void	free_command_list(t_command *cmd)
 			i = 0;
 			while (cmd->command_chain[i] != NULL)
 			{
-				free(cmd->command_chain[i]);
+				gc_remove_ptr(cmd->command_chain[i]);
 				i++;
 			}
-			free(cmd->command_chain);
+			gc_remove_ptr(cmd->command_chain);
 			if (cmd->file != NULL)
 			{
 				free_file_list(cmd->file);
 			}
-			free(cmd);
+			gc_remove_ptr(cmd);
 		}
 		cmd = next;
-	}
-}
-
-void	free_double(char **str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
-}
-
-void	free_var(t_us *var)
-{
-	int	i;
-
-	i = 0;
-	if (!var)
-		return ;
-	// if (var->pid == NULL)
-	// 	return ;
-	if (var->pid)
-	{
-		free(var->pid);
-		var->pid = NULL;
-	}
-	if (var->fd == NULL)
-		return ;
-	if (var->fd != NULL)
-	{
-		while (i < var->nb_cmd - 1)
-		{
-			free(var->fd[i]);
-			var->fd[i] = NULL;
-			i++;
-		}
-		free(var->fd);
-		var->fd = NULL;
 	}
 }

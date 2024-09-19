@@ -33,7 +33,7 @@ char *get_value_by_key(char *key, t_envp *list_envp)
 
 	value = NULL;
 	if (ft_strcmp(key, "?") == 0)
-		value = ft_itoa(var_globale.g_exit_status);
+		value = ft_itoa(g_var_globale.g_exit_status);
 	else if (ft_isdigit(key[0]))
 		value = key + 1;
 	else if (key[0] == '\'' || key[0] == '"')
@@ -56,10 +56,10 @@ char *allocate_final_str(size_t final_str_len)
 {
 	char *final_str;
 
-	final_str = (char *)malloc(final_str_len * sizeof(char) + 1);
+	final_str = (char *)gc_malloc(final_str_len * sizeof(char) + 1);
 	if (final_str == NULL)
 	{
-		free(final_str);
+		gc_remove_ptr(final_str);
 		return NULL;
 	}
 	return final_str;

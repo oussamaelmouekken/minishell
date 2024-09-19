@@ -6,10 +6,11 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 14:26:50 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/03 13:26:13 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/18 11:48:08 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../minishell.h"
 #include "libft.h"
 
 int	count_words1(const char *str, char c)
@@ -37,21 +38,21 @@ static char	**free_list(char **str, int n)
 {
 	while (n >= 0)
 	{
-		free(str[n]);
+		gc_remove_ptr(str[n]);
 		n--;
 	}
-	free(str);
+	gc_remove_ptr(str);
 	return (NULL);
 }
 
-char	**ft_split(char  *s, char c)
+char	**ft_split(char *s, char c)
 {
 	char	**ptr;
 	int		i;
 	int		j;
 	int		n;
 
-	ptr = (char **)malloc((count_words1(s, c) + 1) * sizeof(char *));
+	ptr = (char **)gc_malloc((count_words1(s, c) + 1) * sizeof(char *));
 	if (ptr == NULL)
 		return (NULL);
 	i = 0;

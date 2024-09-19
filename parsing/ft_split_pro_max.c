@@ -44,10 +44,10 @@ static char	**free_list(char **str, int n)
 {
 	while (n >= 0)
 	{
-		free(str[n]);
+		gc_remove_ptr(str[n]);
 		n--;
 	}
-	free(str);
+	gc_remove_ptr(str);
 	return (NULL);
 }
 
@@ -55,7 +55,7 @@ char	**allocate_memory(char *s)
 {
 	char	**ptr;
 
-	ptr = (char **)malloc((count_words(s) + 1) * sizeof(char *));
+	ptr = (char **)gc_malloc((count_words(s) + 1) * sizeof(char *));
 	if (ptr == NULL)
 		return (NULL);
 	return (ptr);

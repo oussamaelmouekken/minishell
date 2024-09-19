@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:59:55 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/03 23:48:03 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/17 19:15:33 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int					ft_strncmp(char *s1, char *s2, size_t n);
 char				*ft_strnstr(const char *str, const char *rechr, size_t len);
 char				*ft_strrchr(const char *str, int c);
 char				*ft_substr(char *s, int start, int len);
+int					ft_cmp(char *s1, char *s2);
 
 typedef struct s_list
 {

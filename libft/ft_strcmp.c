@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 16:22:06 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/16 16:25:57 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/18 11:48:28 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,11 @@
 
 int	ft_strcmp(char *s1, char *s2)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
-	
 	if (s1 == NULL || s2 == NULL)
 		return (1);
-		
 	while (s1[i] && s2[i])
 	{
 		if (s1[i] != s2[i])

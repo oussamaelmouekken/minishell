@@ -9,13 +9,13 @@ char	*append_char_to_string(char *str, char c)
 	i = 0;
 	if (str == NULL)
 	{
-		new_str = (char *)malloc(2);
+		new_str = (char *)gc_malloc(2);
 		new_str[0] = c;
 		new_str[1] = '\0';
 	}
 	else
 	{
-		new_str = (char *)malloc(ft_strlen(str) + 2);
+		new_str = (char *)gc_malloc(ft_strlen(str) + 2);
 		while (str[i])
 		{
 			new_str[i] = str[i];
@@ -134,7 +134,7 @@ void expansion_phase(t_lexer **lexer, t_envp *list_envp)
 	int skip_expansion;
 	
 	skip_expansion = 0;
-	var_globale.export_encountered = 0;
+	g_var_globale.export_encountered = 0;
 	current = *lexer;
 	while (current != NULL)
 	{
@@ -145,7 +145,7 @@ void expansion_phase(t_lexer **lexer, t_envp *list_envp)
 			if (!skip_expansion)
 				current->value = expansion(current->value, list_envp);
 			if (strcmp(current->value, "export") == 0)
-				var_globale.export_encountered = 1;
+				g_var_globale.export_encountered = 1;
 			skip_expansion = 0; 
 		}
 		else

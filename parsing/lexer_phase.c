@@ -7,7 +7,7 @@ void	lexer_phase(t_lexer **lexer, char *input)
 	int				start;
 	int				i;
 	char			*current_word;
-	enum token_type	type;
+	enum e_token_type	type;
 
 	inside_quotes = 0;
 	current_word_len = 0;

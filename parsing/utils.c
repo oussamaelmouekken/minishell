@@ -35,7 +35,7 @@ char *add_spaces_around_special_chars(const char *input)
 	j = 0;
 	inside_double_quotes = 0;
 	inside_single_quotes = 0;
-	modified_input = malloc(strlen(input) * 4 + 1);
+	modified_input = gc_malloc(strlen(input) * 4 + 1);
 	if (modified_input == NULL)
 	{
 		perror("Failed to allocate memory");
@@ -57,7 +57,7 @@ char *add_spaces_around_special_chars(const char *input)
 		{
 			if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|' && input[i + 1] == '|'))
 			{
-				free(modified_input);
+				gc_remove_ptr(modified_input);
 				return (NULL);
 			}
 			modified_input[j++] = ' ';
@@ -91,7 +91,7 @@ size_t strlen_to_char(const char *s, char c)
 void show_lexer(t_lexer *lexer)
 {
 	t_lexer *current = lexer;
-	char *token_type[6] = {
+	char *e_token_type[6] = {
 		"PIPE",			   // = |
 		"REDIRECT_OUT",	   // = >
 		"REDIRECT_IN",	   // = <
@@ -102,7 +102,7 @@ void show_lexer(t_lexer *lexer)
 	while (current != NULL)
 	{
 		printf("value: %s , ", current->value);
-		printf("type: %s\n", token_type[current->type]);
+		printf("type: %s\n", e_token_type[current->type]);
 
 		if (current->prev != NULL)
 			printf("prev value: %s\n", current->prev->value);

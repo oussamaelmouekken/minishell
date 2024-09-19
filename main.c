@@ -6,73 +6,58 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/16 18:08:05 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/19 16:27:29 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_global	var_globale;
+t_global	g_var_globale;
 
-// void	print_minishell(void)
-// {
-// 	printf("\n");
-// 	printf("███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n");
-// 	printf("████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n");
-// 	printf("██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n");
-// 	printf("██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n");
-// 	printf("██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n");
-// 	printf("╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n");
-// 	printf("\n");
-// }
-
-void	show_command(t_command *command)
+void	print_minishell(void)
 {
-	t_command	*current;
-	t_file		*file;
-	int			i;
-	int			j;
+	printf("\n");
+	printf("███╗   ███╗██╗███╗   ██╗██╗███████╗");
+	printf("██╗  ██╗███████╗██╗     ██╗     \n");
+	printf("████╗ ████║██║████╗  ██║██║██╔════╝██");
+	printf("║  ██║██╔════╝██║     ██║     \n");
+	printf("██╔████╔██║██║██╔██╗ ██║██║███████╗");
+	printf("███████║█████╗  ██║     ██║     \n");
+	printf("██║╚██╔╝██║██║██║╚██╗██║██║╚════██║");
+	printf("██╔══██║██╔══╝  ██║     ██║     \n");
+	printf("██║ ╚═╝ ██║██║██║ ╚████║██║███████║");
+	printf("██║  ██║███████╗███████╗███████╗\n");
+	printf("╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝");
+	printf("╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n");
+	printf("\n");
+}
 
-	current = command;
-	j = 0;
-	char *token_type[6] = {
-		"PIPE",            // = |
-		"REDIRECT_OUT",    // = >
-		"REDIRECT_IN",     // = <
-		"REDIRECT_APPEND", // = >>
-		"REDIRECT_INPUT",  //= <<
-		"WORD",
-	};
-	char *is_ambiguous[2] = {
-		"false",
-		"true",
-	};
-	char *is_quoted[2] = {
-		"false",
-		"true",
-	};
-	while (current != NULL)
+int	h(char *input, t_envp *list_envp, t_lexer **lexer)
+{
+	if (check_for_closed_quotes(input) == 0)
 	{
-		i = 0;
-		if (current->command_chain != NULL)
-			while (current->command_chain[i] != NULL)
-			{
-				printf("arr[%i]: %s, ", i, current->command_chain[i]);
-				i++;
-			}
-		printf("\n");
-		file = current->file;
-		while (file != NULL)
-		{
-			printf("filename : `%s` filetype : `%s`  is_ambiguous `%s` is_quoted `%s`\n",
-				file->file_name, token_type[file->file_type],
-				is_ambiguous[file->is_ambiguous], is_quoted[file->is_quoted]);
-			file = file->next;
-		}
-		current = current->next;
-		printf("\n");
-		j++;
+		g_var_globale.g_exit_status = 2;
+		write(2, "minishell: syntax error\n", 24);
+		free(input);
+		return (1);
 	}
+	input = add_spaces_around_special_chars(input);
+	if (input == NULL)
+	{
+		write(2, "minishell: syntax error\n", 24);
+		g_var_globale.g_exit_status = 2;
+		free(input);
+		return (1);
+	}
+	lexer_phase(lexer, input);
+	expansion_phase(lexer, list_envp);
+	if (syntax_error(*lexer))
+	{
+		g_var_globale.g_exit_status = 2;
+		free_lexer_list(lexer);
+		return (1);
+	}
+	return (0);
 }
 
 void	minishell_process(t_lexer **lexer, t_envp *list_envp)
@@ -83,7 +68,7 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 	command = NULL;
 	while (1)
 	{
-		input = readline(G_tty "minishell$ " RESET);
+		input = readline(G_TTY "minishell$ " RESET);
 		if (!input)
 		{
 			write(2, "exit\n", 5);
@@ -91,71 +76,15 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 			break ;
 		}
 		add_history(input);
-		if (check_for_closed_quotes(input) == 0)
-		{
-			var_globale.g_exit_status = 2;
-			write(2, "minishell: syntax error\n", 24);
-			free(input);
+		if (h(input, list_envp, lexer) == 1)
 			continue ;
-		}
-		input = add_spaces_around_special_chars(input);
-		if (input == NULL)
-		{
-			write(2, "minishell: syntax error\n", 24);
-			var_globale.g_exit_status = 2;
-			free(input);
-			continue ;
-		}
-		lexer_phase(lexer, input);
-		expansion_phase(lexer, list_envp);
-		if (syntax_error(*lexer))
-		{
-			free_lexer_list(lexer);
-			free(input);
-			var_globale.g_exit_status = 2;
-			continue ;
-		}
 		command = parser_phase(*lexer);
-		if (command == NULL) // ila kant ./minishell bla cmd
+		if (command == NULL)
 			continue ;
 		else
-		{
-			execute_command(command, list_envp, var_globale.env_arr);
-			// for debugging
-			// show_command(command);
-		}
+			execute_command(command, list_envp, g_var_globale.env_arr);
 		free_lexer_list(lexer);
 		free_command_list(command);
-		free(input);
-		printf("exit %d\n", var_globale.g_exit_status);
-	}
-}
-
-void	change_shlvl(t_envp **envp)
-{
-	char	*v;
-	int		nbr_shlvl;
-	t_envp	*tmp;
-
-	tmp = *envp;
-	while (envp)
-	{
-		if (ft_strcmp(tmp->key, "SHLVL") == 0)
-		{
-			nbr_shlvl = ft_atoi(tmp->value) + 1;
-			if (nbr_shlvl >= 100)
-			{
-				write(2, "warning: shell level (100) too high\n", 36);
-				nbr_shlvl = 1;
-				var_globale.g_exit_status = 1;
-			}
-			free(tmp->value);
-			v = ft_itoa(nbr_shlvl);
-			tmp->value = ft_strdup(v);
-			free(v);
-			return ;
-		}
-		tmp = tmp->next;
 	}
 }
 
@@ -166,20 +95,21 @@ int	main(int argc, char **argv, char **envp)
 
 	env = NULL;
 	lexer = NULL;
-	var_globale.g_exit_status = 0;
-	var_globale.env_arr = NULL;
+	g_var_globale.g_exit_status = 0;
+	g_var_globale.env_arr = NULL;
 	signal(SIGINT, handl_sigint);
 	signal(SIGQUIT, SIG_IGN);
+	print_minishell();
 	if (argc != 1 || argv == NULL)
 	{
 		printf("This program does not accept arguments\n");
 		exit(0);
 	}
 	env = add_env(envp);
-	var_globale.size_list = size_of_list(env);
-	var_globale.envp = env;
-	var_globale.env_arr = add_env_arr(env);
+	g_var_globale.size_list = size_of_list(env);
+	g_var_globale.envp = env;
+	g_var_globale.env_arr = add_env_arr(env);
 	minishell_process(&lexer, env);
-	free_all_in_perent(var_globale);
+	gc_free_all();
 	return (0);
 }

@@ -8,7 +8,6 @@ int print_error(t_lexer **lexer, char *str, char *str1)
 		printf("%s`%c'\n", str, str1[0]);
 	else
 		printf("%s\n", str);
-	// free(*lex);
 	*lexer = NULL;
 	return (0);
 }

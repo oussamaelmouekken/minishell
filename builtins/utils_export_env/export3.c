@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   export3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 19:05:31 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/13 19:37:23 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/18 12:13:16 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 void	change_data(char *str, char *fin, t_envp **env)
 {
@@ -21,13 +21,14 @@ void	change_data(char *str, char *fin, t_envp **env)
 	{
 		if (ft_strcmp(tmp->key, str) == 0)
 		{
-			free(tmp->value);
+			gc_remove_ptr(tmp->value);
 			tmp->value = fin;
 			return ;
 		}
 		tmp = tmp->next;
 	}
 }
+
 void	check_egal_and_addegal(char *str, t_envp **env)
 {
 	t_envp	*tmp;
@@ -37,7 +38,7 @@ void	check_egal_and_addegal(char *str, t_envp **env)
 	while (tmp)
 	{
 		if (ft_cmp(tmp->key, str) == 0 && tmp->key[ft_strlen(tmp->key)
-			- 1] != '=')
+				- 1] != '=')
 		{
 			new_name = ft_strjoin(tmp->key, "=");
 			if (new_name == NULL)
@@ -45,10 +46,10 @@ void	check_egal_and_addegal(char *str, t_envp **env)
 				printf("error ft_strjoin\n");
 				return ;
 			}
-			free(tmp->key);
+			gc_remove_ptr(tmp->key);
 			tmp->key = new_name;
 			tmp->egal_exist = false;
-			return;
+			return ;
 		}
 		tmp = tmp->next;
 	}
@@ -68,10 +69,11 @@ int	if_egal(char *str)
 	}
 	return (1);
 }
+
 void	free_2(char *first, char *fin)
 {
-	free(first);
-	free(fin);
+	gc_remove_ptr(first);
+	gc_remove_ptr(fin);
 }
 
 int	ft_strlen_to_char(char *str, char c)

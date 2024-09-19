@@ -6,11 +6,24 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 18:52:13 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/16 16:43:51 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:24:10 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	nbr_cmd(t_command *cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd)
+	{
+		i++;
+		cmd = cmd->next;
+	}
+	return (i);
+}
 
 void	perent(t_command *cmd, t_us *var)
 {
@@ -18,15 +31,14 @@ void	perent(t_command *cmd, t_us *var)
 	if (var->k > 0)
 	{
 		close(var->fd[var->k - 1][0]);
-		// Parent closes the read end of the previous pipe
 	}
 	if (cmd->next != NULL)
 	{
 		close(var->fd[var->k][1]);
-		// Parent closes the write end of the current pipe
 	}
 }
-void	var_use(t_command *cmd, t_us *var, t_envp *env)
+
+void	var_use(t_command *cmd, t_us *var)
 {
 	int	i;
 
@@ -37,21 +49,18 @@ void	var_use(t_command *cmd, t_us *var, t_envp *env)
 	var->fd_out = 1;
 	var->pid = NULL;
 	var->fd = NULL;
-	var_globale.cmd = cmd;
-	var_globale.envp = env;
-	var_globale.var = var;
 	var->nbr_herdoc = count_herdoc(cmd);
 	var->nb_cmd = nbr_cmd(cmd);
-	if (var->nb_cmd == 1 && is_builtins(cmd) == 0)
-		var->pid = malloc(sizeof(int) * var->nb_cmd);
+	if (var->nb_cmd == 1 && is_builtins(cmd) == 0 && cmd->command_chain != NULL)
+		var->pid = gc_malloc(sizeof(int) * var->nb_cmd);
 	else if (var->nb_cmd > 1)
 	{
-		var->pid = malloc(sizeof(int) * var->nb_cmd);
-		var->fd = malloc(sizeof(int *) * (var->nb_cmd - 1));
+		var->pid = gc_malloc(sizeof(int) * var->nb_cmd);
+		var->fd = gc_malloc(sizeof(int *) * (var->nb_cmd - 1));
 		i = 0;
-		while (i < (var->nb_cmd - 1)) // makaynach pipe last command
+		while (i < (var->nb_cmd - 1))
 		{
-			var->fd[i] = malloc(sizeof(int) * 2);
+			var->fd[i] = gc_malloc(sizeof(int) * 2);
 			pipe(var->fd[i]);
 			i++;
 		}
@@ -62,11 +71,15 @@ int	var_use_and_herdoc(t_command *cmd, t_us *var, t_envp *env)
 {
 	if (cmd->command_chain == NULL && cmd->file == NULL)
 		return (0);
-	var_use(cmd, var, env);
+	var_use(cmd, var);
+	g_var_globale.cmd = cmd;
+	g_var_globale.envp = env;
+	g_var_globale.var = var;
 	if (var->nbr_herdoc > 16)
 	{
 		write(2, "max here-document count exceeded\n", 33);
-		var_globale.g_exit_status = 2;
+		g_var_globale.g_exit_status = 2;
+		gc_free_all();
 		exit(2);
 	}
 	if (var->nbr_herdoc >= 1)
@@ -76,17 +89,17 @@ int	var_use_and_herdoc(t_command *cmd, t_us *var, t_envp *env)
 	}
 	return (1);
 }
+
 int	var_and_single_built(t_command *cmd, t_us *var, t_envp *envp)
 {
-	var_globale.g_exit_status = 0;
+	g_var_globale.g_exit_status = 0;
 	if (var_use_and_herdoc(cmd, var, envp) == 0)
 	{
-		// var_globale.g_exit_status = 1;
 		return (1);
 	}
 	if (var->nb_cmd == 1 && is_builtins(cmd) == 1)
 	{
-		single_cmd(var, cmd, envp);
+		single_cmd_builting(var, cmd, envp);
 		return (1);
 	}
 	if (cmd->command_chain == NULL && var->nb_cmd == 1)
@@ -95,7 +108,7 @@ int	var_and_single_built(t_command *cmd, t_us *var, t_envp *envp)
 		var->fd_out = outfile(cmd);
 		if (var->fd_in < 0 || var->fd_out < 0)
 		{
-			return 1; /// free and cmd
+			return (1);
 		}
 		return (1);
 	}
