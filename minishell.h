@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:05:03 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/19 14:28:14 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/19 23:20:06 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_gc_node
 }						t_gc_node;
 typedef struct t_us
 {
+	int					signal_exit;
 	int					fd_in;
 	int					fd_out;
 	int					fd_herdoc;
@@ -105,6 +106,8 @@ typedef struct for_free
 extern t_global			g_var_globale;
 
 // execution part
+void					write_int(t_us *var);
+void					write_quit(t_us *var);
 int						write_ambiguous1(t_file *file);
 void					restore_in_out(int in, int out);
 void					gc_remove_ptr(void *ptr);

@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:56:58 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/19 14:15:34 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/19 23:19:39 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	single_cmd_builting(t_us *var, t_command *cmd, t_envp *envp)
 {
-	int		out;
-	int		in;
+	int	out;
+	int	in;
 
 	out = dup(1);
 	in = dup(0);
@@ -73,23 +73,24 @@ void	wait_child(t_us *var)
 	int	i;
 	int	status;
 
+	var->signal_exit = 0;
 	status = 0;
 	i = 0;
 	while (i < var->nb_cmd)
 	{
 		waitpid(var->pid[i], &(status), 0);
-		if (WIFEXITED(status))
-			g_var_globale.g_exit_status = WEXITSTATUS(status);
-		if (WIFSIGNALED(status) == 1)
+		if (WIFSIGNALED(status))
 		{
-			if (status == 131)
-				write(2, "Quit (core dumped)\n", 19);
-			else if (status == 2)
+			if (WTERMSIG(status) == SIGQUIT)
 			{
-				g_var_globale.g_exit_status = 130;
-				write(2, "\n", 1);
+				write_quit(var);
+				break ;
 			}
+			else if (WTERMSIG(status) == SIGINT)
+				write_int(var);
 		}
+		else if (WIFEXITED(status) && !var->signal_exit)
+			g_var_globale.g_exit_status = WEXITSTATUS(status);
 		i++;
 	}
 	signal(SIGINT, handl_sigint);
