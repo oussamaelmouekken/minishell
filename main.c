@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/20 15:35:16 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/20 16:10:42 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,9 +126,9 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		if (handl(input, list_envp, lexer) == 1)
 			continue ;
 		command = parser_phase(*lexer);
-		if(command != NULL && *input != '\0')
+		if(*input != '\0')
 			add_history(input);
-		if (command == NULL)
+		if (*input == '\0')
 			continue ;
 		else
 			execute_command(command, list_envp, g_var_globale.env_arr);
