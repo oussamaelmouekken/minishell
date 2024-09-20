@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/19 21:57:48 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/20 15:03:46 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	print_minishell(void)
 	printf("\n");
 }
 
-int	h(char *input, t_envp *list_envp, t_lexer **lexer)
+int	handl(char *input, t_envp *list_envp, t_lexer **lexer)
 {
 	if (check_for_closed_quotes(input) == 0)
 	{
@@ -76,7 +76,7 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 			break ;
 		}
 		add_history(input);
-		if (h(input, list_envp, lexer) == 1)
+		if (handl(input, list_envp, lexer) == 1)
 			continue ;
 		command = parser_phase(*lexer);
 		if (command == NULL)
