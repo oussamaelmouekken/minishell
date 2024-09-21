@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 18:49:17 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/19 15:24:37 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:10:48 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	execute_cmd(t_command *cmd, char **env)
 
 	if (cmd->command_chain[0] == NULL)
 		return ;
-	if (access(cmd->command_chain[0], F_OK | X_OK) == 0)
+	if (access(cmd->command_chain[0], F_OK) == 0)
 	{
 		if (execve(cmd->command_chain[0], cmd->command_chain, env) == -1)
 		{

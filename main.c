@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 10:04:20 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/20 16:10:42 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:12:39 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,54 +14,6 @@
 
 t_global	g_var_globale;
 
-// void    show_command(t_command *command)
-// {
-//     t_command    *current;
-//     t_file        *file;
-//     int            i;
-//     int            j;
-
-//     current = command;
-//     j = 0;
-//     char *e_token_type[6] = {
-//         "PIPE",            // = |
-//         "REDIRECT_OUT",    // = >
-//         "REDIRECT_IN",     // = <
-//         "REDIRECT_APPEND", // = >>
-//         "REDIRECT_INPUT",  //= <<
-//         "WORD",
-//     };
-//     char *is_ambiguous[2] = {
-//         "false",
-//         "true",
-//     };
-//     char *is_quoted[2] = {
-//         "false",
-//         "true",
-//     };
-//     while (current != NULL)
-//     {
-//         i = 0;
-//         if (current->command_chain != NULL)
-//             while (current->command_chain[i] != NULL)
-//             {
-//                 printf("arr[%i]: %s, ", i, current->command_chain[i]);
-//                 i++;
-//             }
-//         printf("\n");
-//         file = current->file;
-//         while (file != NULL)
-//         {
-//     printf("filename : `%s` filetype : `%s`  is_ambiguous `%s` is_quoted `%s`\n",
-//                 file->file_name, e_token_type[file->file_type],
-//                 is_ambiguous[file->is_ambiguous], is_quoted[file->is_quoted]);
-//             file = file->next;
-//         }
-//         current = current->next;
-//         printf("\n");
-//         j++;
-//     }
-// }
 void	print_minishell(void)
 {
 	printf("\n");
@@ -126,7 +78,7 @@ void	minishell_process(t_lexer **lexer, t_envp *list_envp)
 		if (handl(input, list_envp, lexer) == 1)
 			continue ;
 		command = parser_phase(*lexer);
-		if(*input != '\0')
+		if (*input != '\0')
 			add_history(input);
 		if (*input == '\0')
 			continue ;
