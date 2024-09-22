@@ -6,7 +6,7 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 18:49:17 by oussama           #+#    #+#             */
-/*   Updated: 2024/09/21 17:10:48 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/22 01:45:14 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,10 @@ int	outfile(t_command *cmd)
 	return (f);
 }
 
-void	error_e(void)
+void	error_e(char *str)
 {
-	perror("command not found");
+	write(2, str, ft_strlen(str));
+	write(2, " : command not found\n", 22);
 	gc_free_all();
 	exit(127);
 }
@@ -102,13 +103,13 @@ void	execute_cmd(t_command *cmd, char **env)
 				gc_free_all();
 				exit(126);
 			}
-			error_e();
+			error_e(cmd->command_chain[0]);
 			exit(127);
 		}
 	}
 	path = true_path(cmd->command_chain[0], env);
 	if (path == NULL)
-		error_e();
+		error_e(cmd->command_chain[0]);
 	if (execve(path, cmd->command_chain, env) == -1)
-		error_e();
+		error_e(cmd->command_chain[0]);
 }

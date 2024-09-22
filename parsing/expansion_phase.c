@@ -1,41 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion_phase.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/16 18:22:22 by mohamed           #+#    #+#             */
+/*   Updated: 2024/09/22 01:28:52 by oel-moue         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../minishell.h"
-
-char	*append_char_to_string(char *str, char c)
-{
-	char	*new_str;
-	int		i;
-
-	i = 0;
-	if (str == NULL)
-	{
-		new_str = (char *)gc_malloc(2);
-		new_str[0] = c;
-		new_str[1] = '\0';
-	}
-	else
-	{
-		new_str = (char *)gc_malloc(ft_strlen(str) + 2);
-		while (str[i])
-		{
-			new_str[i] = str[i];
-			i++;
-		}
-		new_str[i] = c;
-		new_str[i + 1] = '\0';
-	}
-	return (new_str);
-}
-
-char	*append_alnum(char *key, char *str, int *i)
-{
-	while (str[*i] && is_alnum_or_underscore(str[*i]))
-	{
-		key = append_char_to_string(key, str[*i]);
-		(*i)++;
-	}
-	return (key);
-}
 
 char	*get_from_quotes(char *key, char *str, int *i)
 {
@@ -60,93 +35,85 @@ char	*get_from_quotes(char *key, char *str, int *i)
 	return (key);
 }
 
-char	*expansion(char *str, t_envp *list_envp)
+void	process_dollar_sign(char *str, t_expansion_vars *phase)
 {
-	int		i;
-	int		inside_single_quotes;
-	int		inside_double_quotes;
-	char	*key;
-	char	*final_str;
-
-	i = 0;
-	inside_single_quotes = 0;
-	inside_double_quotes = 0;
-	key = NULL;
-	final_str = str;
-	while (str[i])
+	if (str[phase->i] == '$' && isdigit(str[phase->i + 1])
+		&& phase->inside_single_quotes == 1)
+		phase->final_str = handle_digit(str, &(phase->i), phase->final_str);
+	else if (str[phase->i] == '$' && is_alnum_or_underscore(str[phase->i + 1])
+		&& phase->inside_single_quotes == 1)
+		phase->final_str = handle_alnum(str, &(phase->i), phase->final_str);
+	else if (str[phase->i] == '$' && str[phase->i + 1] == '?'
+		&& phase->inside_single_quotes == 1)
+		phase->final_str = handle_special_char(&(phase->i), phase->final_str,
+				'?');
+	else if (str[phase->i] == '$' && str[phase->i + 1] == '$'
+		&& phase->inside_single_quotes == 1)
+		phase->final_str = handle_special_char(&(phase->i), phase->final_str,
+				'$');
+	else if (str[phase->i] == '$' && (str[phase->i + 1] == '\'' || str[phase->i
+				+ 1] == '"') && phase->inside_single_quotes == 1)
+		phase->final_str = handle_quote(str, &(phase->i), phase->final_str);
+	else
 	{
-		if (str[i] == '"' && inside_double_quotes == 0)
-			inside_double_quotes = 1;
-		else if (str[i] == '"' && inside_double_quotes == 1)
-			inside_double_quotes = 0;
-		else if (str[i] == '\'' && !inside_double_quotes
-			&& inside_single_quotes == 0)
-		{
-			inside_single_quotes = 1;
-			break ;
-		}
-		if (!inside_single_quotes && str[i] == '$' && ft_isdigit(str[i + 1]))
-		{
-			i += 1;
-			key = append_alnum(key, str, &i);
-			final_str = replace_env_keys_with_values(final_str, key, list_envp);
-			key = NULL;
-		}
-		else if (!inside_single_quotes && str[i] == '$'
-			&& is_alnum_or_underscore(str[i + 1]))
-		{
-			i += 1;
-			key = append_alnum(key, str, &i);
-			final_str = replace_env_keys_with_values(final_str, key, list_envp);
-			key = NULL;
-		}
-		else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '?')
-		{
-			i += 2;
-			key = append_char_to_string(key, '?');
-			final_str = replace_env_keys_with_values(final_str, key, list_envp);
-			key = NULL;
-		}
-		else if (!inside_single_quotes && str[i] == '$' && str[i + 1] == '$')
-		{
-			i += 2;
-			key = append_char_to_string(key, '$');
-			final_str = replace_env_keys_with_values(final_str, key, list_envp);
-			key = NULL;
-		}
-		else if (!inside_single_quotes && str[i] == '$' && (str[i + 1] == '\''
-				|| str[i + 1] == '"'))
-		{
-			i += 1;
-			key = get_from_quotes(key, str, &i);
-			final_str = replace_env_keys_with_values(final_str, key, list_envp);
-			key = NULL;
-		}
-		else
-			i++;
+		phase->final_str = append_char_to_string(phase->final_str,
+				str[phase->i]);
+		phase->i++;
 	}
-	return (final_str);
 }
 
-void expansion_phase(t_lexer **lexer, t_envp *list_envp)
+void	process_key(char *str, t_expansion_vars *phase)
 {
-	t_lexer *current;
-	int skip_expansion;
-	
+	while (str[phase->i] != '\0')
+	{
+		if (str[phase->i] == '\'' && phase->inside_double_quotes == 1)
+			phase->inside_single_quotes *= -1;
+		else if (str[phase->i] == '"' && phase->inside_single_quotes == 1)
+			phase->inside_double_quotes *= -1;
+		if (str[phase->i] == '$')
+			process_dollar_sign(str, phase);
+		else
+		{
+			phase->final_str = append_char_to_string(phase->final_str,
+					str[phase->i]);
+			phase->i++;
+		}
+	}
+}
+
+char	*expansion(char *str)
+{
+	t_expansion_vars	phase;
+
+	phase.i = 0;
+	phase.inside_single_quotes = 1;
+	phase.inside_double_quotes = 1;
+	phase.final_str = ft_strdup("");
+	while (str[phase.i])
+		process_key(str, &phase);
+	return (phase.final_str);
+}
+
+void	expansion_phase(t_lexer **lexer)
+{
+	t_lexer	*current;
+	int		skip_expansion;
+
 	skip_expansion = 0;
 	g_var_globale.export_encountered = 0;
 	current = *lexer;
 	while (current != NULL)
 	{
-		if (current->type == REDIRECT_INPUT || current->type == REDIRECT_OUT || current->type == REDIRECT_APPEND || current->type == REDIRECT_IN)
+		if (current->type == REDIRECT_INPUT || current->type == REDIRECT_OUT
+			|| current->type == REDIRECT_APPEND || current->type == REDIRECT_IN)
 			skip_expansion = 1;
 		else if (current->type == WORD)
 		{
 			if (!skip_expansion)
-				current->value = expansion(current->value, list_envp);
+				current->value = expansion(current->value);
 			if (strcmp(current->value, "export") == 0)
 				g_var_globale.export_encountered = 1;
-			skip_expansion = 0; 
+			skip_expansion = 0;
 		}
 		else
 			skip_expansion = 0;

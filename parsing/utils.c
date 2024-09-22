@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/19 18:08:30 by mohamed           #+#    #+#             */
+/*   Updated: 2024/09/22 01:16:57 by oel-moue         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int check_for_closed_quotes(char *input)
+int	check_for_closed_quotes(char *input)
 {
-	char *str;
-	char current_quote;
+	char	*str;
+	char	current_quote;
 
 	str = input;
 	current_quote = 0;
@@ -23,98 +35,28 @@ int check_for_closed_quotes(char *input)
 	return (1);
 }
 
-char *add_spaces_around_special_chars(const char *input)
+char	*append_alnum(char *key, char *str, int *i)
 {
-	char *modified_input;
-	int i;
-	int j;
-	int inside_double_quotes;
-	int inside_single_quotes;
-
-	i = 0;
-	j = 0;
-	inside_double_quotes = 0;
-	inside_single_quotes = 0;
-	modified_input = gc_malloc(strlen(input) * 4 + 1);
-	if (modified_input == NULL)
+	while (str[*i] && is_alnum_or_underscore(str[*i]))
 	{
-		perror("Failed to allocate memory");
-		exit(EXIT_FAILURE);
+		key = append_char_to_string(key, str[*i]);
+		(*i)++;
 	}
-	while (input[i] != '\0')
-	{
-		if (input[i] == '"')
-		{
-			inside_double_quotes = !inside_double_quotes;
-			modified_input[j++] = input[i];
-		}
-		else if (input[i] == '\'')
-		{
-			inside_single_quotes = !inside_single_quotes;
-			modified_input[j++] = input[i];
-		}
-		else if (!inside_double_quotes && !inside_single_quotes && (input[i] == '<' || input[i] == '|' || input[i] == '>' || input[i] == '&'))
-		{
-			if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|' && input[i + 1] == '|'))
-			{
-				gc_remove_ptr(modified_input);
-				return (NULL);
-			}
-			modified_input[j++] = ' ';
-			modified_input[j++] = input[i];
-			if ((input[i] == '>' && input[i + 1] == '>') || (input[i] == '<' && input[i + 1] == '<'))
-			{
-				modified_input[j++] = input[++i];
-			}
-			modified_input[j++] = ' ';
-		}
-		else
-		{
-			modified_input[j++] = input[i];
-		}
-		i++;
-	}
-	modified_input[j] = '\0';
-	return (modified_input);
+	return (key);
 }
 
-size_t strlen_to_char(const char *s, char c)
+void	free_lexer_list(t_lexer **lexer)
 {
-	int len;
+	t_lexer	*current;
+	t_lexer	*next;
 
-	len = 0;
-	while (s[len] != '\0' && s[len] != c)
-		len++;
-	return (len);
-}
-
-void show_lexer(t_lexer *lexer)
-{
-	t_lexer *current = lexer;
-	char *e_token_type[6] = {
-		"PIPE",			   // = |
-		"REDIRECT_OUT",	   // = >
-		"REDIRECT_IN",	   // = <
-		"REDIRECT_APPEND", // = >>
-		"REDIRECT_INPUT",  //= <<
-		"WORD",
-	};
+	current = *lexer;
 	while (current != NULL)
 	{
-		printf("value: %s , ", current->value);
-		printf("type: %s\n", e_token_type[current->type]);
-
-		if (current->prev != NULL)
-			printf("prev value: %s\n", current->prev->value);
-		else
-			printf("prev value: NULL\n");
-
-		if (current->next != NULL)
-			printf("next value: %s\n", current->next->value);
-		else
-			printf("next value: NULL\n");
-
-		printf("\n");
-		current = current->next;
+		next = current->next;
+		gc_remove_ptr(current->value);
+		gc_remove_ptr(current);
+		current = next;
 	}
+	*lexer = NULL;
 }

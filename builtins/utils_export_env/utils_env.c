@@ -6,20 +6,22 @@
 /*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 17:13:53 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/18 12:12:23 by oel-moue         ###   ########.fr       */
+/*   Updated: 2024/09/22 01:00:24 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-char	*ft_getenv(t_envp *env, char *key)
+char	*ft_getenv(char *key)
 {
 	t_envp	*current;
+	char	*current_key_without_equal;
 
-	current = env;
+	current = g_var_globale.envp;
 	while (current != NULL)
 	{
-		if (ft_strcmp(current->key, key) == 0)
+		current_key_without_equal = ft_remove_equal(current->key);
+		if (is_equal(current_key_without_equal, key) == 0)
 			return (current->value);
 		current = current->next;
 	}

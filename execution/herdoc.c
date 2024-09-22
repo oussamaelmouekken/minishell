@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   herdoc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oussama <oussama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: oel-moue <oel-moue@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/24 20:38:19 by oel-moue          #+#    #+#             */
-/*   Updated: 2024/09/18 16:58:15 by oussama          ###   ########.fr       */
+/*   Updated: 2024/09/22 01:19:33 by oel-moue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	herdoc1(t_file *f, t_envp *env, int f0, int f1)
 {
 	char	*str_line;
 
+	(void)env;
 	signal(SIGINT, handl_sigint_herdoc);
 	close(f0);
 	while (1)
@@ -52,7 +53,7 @@ void	herdoc1(t_file *f, t_envp *env, int f0, int f1)
 		}
 		str_line = ft_strjoin(str_line, "\n");
 		if (f->is_quoted == false)
-			str_line = expansion(str_line, env);
+			str_line = expansion(str_line);
 		write(f1, str_line, ft_strlen(str_line));
 	}
 	if (str_line == NULL)
